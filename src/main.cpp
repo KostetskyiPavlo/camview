@@ -1,63 +1,37 @@
-#include "camera/TestPatternSource.hpp"
-#include "render/Renderer.hpp"
-#include "util/Clock.hpp"
+#include "camera/V4l2Camera.hpp"
 #include "util/Log.hpp"
 
 #include <exception>
+#include <string>
+#include <string_view>
 
 namespace camview {
 
-// Temporary single-threaded loop for step 4; replaced by App in later steps.
-int run() {
+// Temporary probe for step 5. Usage: camview [device] [yuyv|mjpg] [width] [height] [fps]
+// Proper CLI parsing and validation come in step 8.
+int run(int argc, char** argv) {
+    const std::string device = argc > 1 ? argv[1] : "/dev/video0";
+    const PixelFormat format = (argc > 2 && std::string_view(argv[2]) == "yuyv")
+                                   ? PixelFormat::Yuyv
+                                   : PixelFormat::Mjpeg;
+    const int width = argc > 3 ? std::stoi(argv[3]) : 640;
+    const int height = argc > 4 ? std::stoi(argv[4]) : 480;
+    const double fps = argc > 5 ? std::stod(argv[5]) : 30.0;
+
     log::info("camview ", CAMVIEW_VERSION);
 
-    TestPatternSource source(640, 480, 30.0);
-    source.open();
-    log::info("Source: ", source.description());
-    log::info("Mode:   ", toString(source.mode()));
-
-    const CameraMode mode = source.mode();
-    Renderer renderer("camview", mode.width, mode.height);
-
-    // Short timeout keeps the window responsive even if the source stalls.
-    constexpr auto kCaptureTimeout = std::chrono::milliseconds(100);
-
-    Frame frame;
-    int framesInWindow = 0;
-    TimePoint windowStart = Clock::now();
-
-    while (!renderer.pollQuitRequested()) {
-        const CaptureStatus status = source.capture(frame, kCaptureTimeout);
-        if (status == CaptureStatus::Disconnected) {
-            log::error("Source disconnected");
-            return 1;
-        }
-        if (status == CaptureStatus::Timeout) {
-            continue;
-        }
-
-        renderer.render(frame);
-        ++framesInWindow;
-
-        const TimePoint now = Clock::now();
-        if (now - windowStart >= std::chrono::seconds(1)) {
-            const double seconds = std::chrono::duration<double>(now - windowStart).count();
-            log::info("Rendered ", framesInWindow / seconds, " fps");
-            framesInWindow = 0;
-            windowStart = now;
-        }
-    }
-
-    log::info("Quit requested, exiting");
-    source.close();
+    V4l2Camera camera(device, CameraMode{format, width, height, fps});
+    camera.open();
+    camera.close();
+    log::info("Device closed");
     return 0;
 }
 
 } // namespace camview
 
-int main() {
+int main(int argc, char** argv) {
     try {
-        return camview::run();
+        return camview::run(argc, argv);
     } catch (const std::exception& e) {
         camview::log::error("Fatal: ", e.what());
         return 1;

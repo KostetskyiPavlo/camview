@@ -77,6 +77,7 @@ endif()
 add_library(camview_core STATIC
     src/camera/CameraMode.cpp
     src/camera/TestPatternSource.cpp
+    src/camera/V4l2Camera.cpp
     src/frame/PixelFormat.cpp
     src/render/Renderer.cpp
     src/util/Log.cpp)
