@@ -1,0 +1,3 @@
+/home/pav/projects/camview/build/asan/CMakeFiles/camview.dir
+/home/pav/projects/camview/build/asan/CMakeFiles/edit_cache.dir
+/home/pav/projects/camview/build/asan/CMakeFiles/rebuild_cache.dir
