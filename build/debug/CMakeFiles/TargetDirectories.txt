@@ -1,3 +1,4 @@
+/home/pav/projects/camview/build/debug/CMakeFiles/camview_core.dir
 /home/pav/projects/camview/build/debug/CMakeFiles/camview.dir
 /home/pav/projects/camview/build/debug/CMakeFiles/edit_cache.dir
 /home/pav/projects/camview/build/debug/CMakeFiles/rebuild_cache.dir

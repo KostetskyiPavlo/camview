@@ -1,3 +1,17 @@
 # ninja log v5
-1	455	1793282882560090433	CMakeFiles/camview.dir/src/main.cpp.o	7176fe0b5b947d41
 456	732	1793282882835409118	camview	410f759a1338fb56
+1	455	1793282882560090433	CMakeFiles/camview.dir/src/main.cpp.o	7176fe0b5b947d41
+67	187	1793290293785368515	build.ninja	39b361c6dbcaa08b
+3	563	1793290294354587029	CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o	4bb2f14154648b6f
+4	577	1793290294368785129	CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o	e3e755843f67e456
+4	1596	1793290295388197054	CMakeFiles/camview_core.dir/src/util/Log.cpp.o	b2b4917eedfc064d
+5	1754	1793290295545752658	CMakeFiles/camview.dir/src/main.cpp.o	974e4dcdf5487697
+3	2031	1793290295822054664	CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o	99266d22e8d5f9e9
+2031	2091	1793290295879765566	libcamview_core.a	29e24ae1a70a9537
+2091	2384	1793290296174059973	camview	b5354914662f5d2d
+2	1414	1793290383218273336	CMakeFiles/camview.dir/src/main.cpp.o	974e4dcdf5487697
+1414	1575	1793290383378246538	camview	b5354914662f5d2d
+2	1560	1793290408734488824	CMakeFiles/camview.dir/src/main.cpp.o	974e4dcdf5487697
+2	1754	1793290408927755326	CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o	99266d22e8d5f9e9
+1754	1810	1793290408982663427	libcamview_core.a	29e24ae1a70a9537
+1810	1964	1793290409136892929	camview	b5354914662f5d2d

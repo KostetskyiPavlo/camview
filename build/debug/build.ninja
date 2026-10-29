@@ -41,18 +41,72 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = /home/pav/projects/camview/build/debug/
 # =============================================================================
+# Object build statements for STATIC_LIBRARY target camview_core
+
+
+#############################################
+# Order-only phony target for camview_core
+
+build cmake_object_order_depends_target_camview_core: phony || CMakeFiles/camview_core.dir
+
+build CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/CameraMode.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual
+  INCLUDES = -I/home/pav/projects/camview/src
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/camera
+
+build CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/TestPatternSource.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual
+  INCLUDES = -I/home/pav/projects/camview/src
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/camera
+
+build CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/frame/PixelFormat.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual
+  INCLUDES = -I/home/pav/projects/camview/src
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/frame
+
+build CMakeFiles/camview_core.dir/src/util/Log.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/util/Log.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/util/Log.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual
+  INCLUDES = -I/home/pav/projects/camview/src
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/util
+
+
+# =============================================================================
+# Link build statements for STATIC_LIBRARY target camview_core
+
+
+#############################################
+# Link the static library libcamview_core.a
+
+build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
+  LANGUAGE_COMPILE_FLAGS = -g
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = libcamview_core.a
+  TARGET_PDB = camview_core.a.dbg
+
+# =============================================================================
 # Object build statements for EXECUTABLE target camview
 
 
 #############################################
 # Order-only phony target for camview
 
-build cmake_object_order_depends_target_camview: phony || CMakeFiles/camview.dir
+build cmake_object_order_depends_target_camview: phony || cmake_object_order_depends_target_camview_core
 
 build CMakeFiles/camview.dir/src/main.cpp.o: CXX_COMPILER__camview_unscanned_Debug /home/pav/projects/camview/src/main.cpp || cmake_object_order_depends_target_camview
   DEFINES = -DCAMVIEW_VERSION=\"0.1.0\"
   DEP_FILE = CMakeFiles/camview.dir/src/main.cpp.o.d
   FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual
+  INCLUDES = -I/home/pav/projects/camview/src
   OBJECT_DIR = CMakeFiles/camview.dir
   OBJECT_FILE_DIR = CMakeFiles/camview.dir/src
 
@@ -64,8 +118,9 @@ build CMakeFiles/camview.dir/src/main.cpp.o: CXX_COMPILER__camview_unscanned_Deb
 #############################################
 # Link the executable camview
 
-build camview: CXX_EXECUTABLE_LINKER__camview_Debug CMakeFiles/camview.dir/src/main.cpp.o
+build camview: CXX_EXECUTABLE_LINKER__camview_Debug CMakeFiles/camview.dir/src/main.cpp.o | libcamview_core.a || libcamview_core.a
   FLAGS = -g
+  LINK_LIBRARIES = libcamview_core.a
   OBJECT_DIR = CMakeFiles/camview.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -98,6 +153,8 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
+build camview_core: phony libcamview_core.a
+
 # =============================================================================
 # Folder targets.
 
@@ -106,7 +163,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 #############################################
 # Folder: /home/pav/projects/camview/build/debug
 
-build all: phony camview
+build all: phony libcamview_core.a camview
 
 # =============================================================================
 # Built-in targets
