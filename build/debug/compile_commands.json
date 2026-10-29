@@ -1,25 +1,31 @@
 [
 {
   "directory": "/home/pav/projects/camview/build/debug",
-  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -o CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o -c /home/pav/projects/camview/src/camera/CameraMode.cpp",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT -o CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o -c /home/pav/projects/camview/src/camera/CameraMode.cpp",
   "file": "/home/pav/projects/camview/src/camera/CameraMode.cpp",
   "output": "CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o"
 },
 {
   "directory": "/home/pav/projects/camview/build/debug",
-  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o -c /home/pav/projects/camview/src/camera/TestPatternSource.cpp",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT -o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o -c /home/pav/projects/camview/src/camera/TestPatternSource.cpp",
   "file": "/home/pav/projects/camview/src/camera/TestPatternSource.cpp",
   "output": "CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o"
 },
 {
   "directory": "/home/pav/projects/camview/build/debug",
-  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o -c /home/pav/projects/camview/src/frame/PixelFormat.cpp",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT -o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o -c /home/pav/projects/camview/src/frame/PixelFormat.cpp",
   "file": "/home/pav/projects/camview/src/frame/PixelFormat.cpp",
   "output": "CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o"
 },
 {
   "directory": "/home/pav/projects/camview/build/debug",
-  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -o CMakeFiles/camview_core.dir/src/util/Log.cpp.o -c /home/pav/projects/camview/src/util/Log.cpp",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT -o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o -c /home/pav/projects/camview/src/render/Renderer.cpp",
+  "file": "/home/pav/projects/camview/src/render/Renderer.cpp",
+  "output": "CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/debug",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT -o CMakeFiles/camview_core.dir/src/util/Log.cpp.o -c /home/pav/projects/camview/src/util/Log.cpp",
   "file": "/home/pav/projects/camview/src/util/Log.cpp",
   "output": "CMakeFiles/camview_core.dir/src/util/Log.cpp.o"
 },

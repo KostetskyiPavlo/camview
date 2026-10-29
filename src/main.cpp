@@ -1,4 +1,5 @@
 #include "camera/TestPatternSource.hpp"
+#include "render/Renderer.hpp"
 #include "util/Clock.hpp"
 #include "util/Log.hpp"
 
@@ -6,34 +7,48 @@
 
 namespace camview {
 
-// Temporary smoke test for step 3; replaced by App in later steps.
+// Temporary single-threaded loop for step 4; replaced by App in later steps.
 int run() {
+    log::info("camview ", CAMVIEW_VERSION);
+
     TestPatternSource source(640, 480, 30.0);
     source.open();
-    log::info("camview ", CAMVIEW_VERSION);
     log::info("Source: ", source.description());
     log::info("Mode:   ", toString(source.mode()));
 
-    constexpr int kFramesToCapture = 90;
-    constexpr auto kCaptureTimeout = std::chrono::milliseconds(1000);
+    const CameraMode mode = source.mode();
+    Renderer renderer("camview", mode.width, mode.height);
+
+    // Short timeout keeps the window responsive even if the source stalls.
+    constexpr auto kCaptureTimeout = std::chrono::milliseconds(100);
 
     Frame frame;
-    const TimePoint start = Clock::now();
-    for (int i = 0; i < kFramesToCapture; ++i) {
-        if (source.capture(frame, kCaptureTimeout) != CaptureStatus::Ok) {
-            log::error("Capture failed at frame ", i);
+    int framesInWindow = 0;
+    TimePoint windowStart = Clock::now();
+
+    while (!renderer.pollQuitRequested()) {
+        const CaptureStatus status = source.capture(frame, kCaptureTimeout);
+        if (status == CaptureStatus::Disconnected) {
+            log::error("Source disconnected");
             return 1;
         }
-        if (frame.sequence % 30 == 0) {
-            log::info("Frame #", frame.sequence, " ", frame.width, "x", frame.height, ", ",
-                      frame.data.size(), " bytes, age ",
-                      toMilliseconds(frame.dequeueTime - frame.captureTime), " ms");
+        if (status == CaptureStatus::Timeout) {
+            continue;
+        }
+
+        renderer.render(frame);
+        ++framesInWindow;
+
+        const TimePoint now = Clock::now();
+        if (now - windowStart >= std::chrono::seconds(1)) {
+            const double seconds = std::chrono::duration<double>(now - windowStart).count();
+            log::info("Rendered ", framesInWindow / seconds, " fps");
+            framesInWindow = 0;
+            windowStart = now;
         }
     }
-    const double seconds = std::chrono::duration<double>(Clock::now() - start).count();
-    log::info("Captured ", kFramesToCapture, " frames in ", seconds, " s -> ",
-              kFramesToCapture / seconds, " fps");
 
+    log::info("Quit requested, exiting");
     source.close();
     return 0;
 }

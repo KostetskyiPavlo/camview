@@ -78,13 +78,13 @@ add_library(camview_core STATIC
     src/camera/CameraMode.cpp
     src/camera/TestPatternSource.cpp
     src/frame/PixelFormat.cpp
+    src/render/Renderer.cpp
     src/util/Log.cpp)
 
 target_include_directories(camview_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(camview_core
     PUBLIC Threads::Threads
-    PRIVATE camview_options)
-
+    PRIVATE camview_options PkgConfig::SDL2)
 # ---------------------------------------------------------------------------
 # Application
 # ---------------------------------------------------------------------------
