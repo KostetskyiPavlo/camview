@@ -3,10 +3,14 @@
 
 #include <fcntl.h>
 #include <linux/videodev2.h>
+#include <poll.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
 
 #include <cerrno>
 #include <cmath>
+#include <cstring>
+#include <optional>
 #include <stdexcept>
 #include <system_error>
 #include <utility>
@@ -18,6 +22,11 @@ namespace {
 // Our FourCC values must match the kernel's so they can be passed to V4L2 unchanged.
 static_assert(makeFourcc('Y', 'U', 'Y', 'V') == V4L2_PIX_FMT_YUYV);
 static_assert(makeFourcc('M', 'J', 'P', 'G') == V4L2_PIX_FMT_MJPEG);
+
+// Enough for the driver to keep filling buffers while we hold one, few enough that a stale
+// queue cannot grow long.
+constexpr std::uint32_t kRequestedBufferCount = 4;
+constexpr std::uint32_t kMinBufferCount = 2;
 
 // ioctl() that transparently retries when interrupted by a signal.
 int xioctl(int fd, unsigned long request, void* argument) {
@@ -58,6 +67,19 @@ std::string cString(const __u8* bytes) {
     return reinterpret_cast<const char*>(bytes);
 }
 
+// Works because libstdc++'s steady_clock and V4L2 monotonic timestamps share CLOCK_MONOTONIC.
+TimePoint toTimePoint(const timeval& time) {
+    return TimePoint{std::chrono::duration_cast<Duration>(std::chrono::seconds{time.tv_sec} +
+                                                          std::chrono::microseconds{time.tv_usec})};
+}
+
+v4l2_buffer makeBuffer() {
+    v4l2_buffer buffer{};
+    buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buffer.memory = V4L2_MEMORY_MMAP;
+    return buffer;
+}
+
 } // namespace
 
 V4l2Camera::V4l2Camera(std::string devicePath, CameraMode requested)
@@ -93,6 +115,7 @@ void V4l2Camera::open() {
         queryCapabilities();
         negotiateFormat();
         negotiateFrameRate();
+        startStreaming();
     } catch (...) {
         close();
         throw;
@@ -101,13 +124,14 @@ void V4l2Camera::open() {
     log::info("Opened ", description());
     log::info("Requested:  ", toString(requested_));
     log::info("Negotiated: ", toString(mode_), " (stride ", stride_, " B, max frame ",
-              maxFrameBytes_, " B)");
+              maxFrameBytes_, " B, ", buffers_.size(), " buffers)");
     if (mode_ != requested_) {
         log::warning("The driver adjusted the requested mode");
     }
 }
 
 void V4l2Camera::close() noexcept {
+    stopStreaming();
     fd_.reset();
 }
 
@@ -126,8 +150,101 @@ std::string V4l2Camera::description() const {
     return devicePath_ + " - " + cardName_ + " (driver " + driverName_ + ", " + busInfo_ + ")";
 }
 
-CaptureStatus V4l2Camera::capture(Frame& /*frame*/, std::chrono::milliseconds /*timeout*/) {
-    throw std::logic_error("V4l2Camera::capture: streaming is not implemented yet");
+CaptureStatus V4l2Camera::capture(Frame& frame, std::chrono::milliseconds timeout) {
+    if (!streaming_) {
+        return CaptureStatus::Disconnected;
+    }
+
+    pollfd descriptor{};
+    descriptor.fd = fd_.get();
+    descriptor.events = POLLIN;
+    int ready = 0;
+    do {
+        ready = ::poll(&descriptor, 1, static_cast<int>(timeout.count()));
+    } while (ready == -1 && errno == EINTR);
+
+    if (ready == -1) {
+        const int error = errno;
+        log::error("poll on ", devicePath_, " failed: ", errnoText(error));
+        return CaptureStatus::Disconnected;
+    }
+    if (ready == 0) {
+        return CaptureStatus::Timeout;
+    }
+    if ((descriptor.revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+        log::error(devicePath_, " reported an error condition (was it unplugged?)");
+        return CaptureStatus::Disconnected;
+    }
+
+    // Drain the queue: keep only the newest filled buffer and give older ones straight back.
+    std::optional<v4l2_buffer> newest;
+    for (;;) {
+        v4l2_buffer buffer = makeBuffer();
+        if (xioctl(fd_.get(), VIDIOC_DQBUF, &buffer) == -1) {
+            const int error = errno;
+            if (error == EAGAIN) {
+                break;
+            }
+            log::error("VIDIOC_DQBUF on ", devicePath_, " failed: ", errnoText(error));
+            return CaptureStatus::Disconnected;
+        }
+        if (newest) {
+            ++staleFramesSkipped_;
+            if (!queueBuffer(newest->index)) {
+                return CaptureStatus::Disconnected;
+            }
+        }
+        newest = buffer;
+    }
+    if (!newest) {
+        return CaptureStatus::Timeout; // Woken up without a ready frame.
+    }
+
+    const TimePoint dequeueTime = Clock::now();
+    const v4l2_buffer& buffer = *newest;
+    if (buffer.index >= buffers_.size()) {
+        log::error("Driver returned an invalid buffer index ", buffer.index);
+        return CaptureStatus::Disconnected;
+    }
+
+    const MappedBuffer& mapped = buffers_[buffer.index];
+    const std::size_t bytesUsed = buffer.bytesused;
+    const std::size_t minimumBytes =
+        mode_.format == PixelFormat::Yuyv
+            ? static_cast<std::size_t>(stride_) * static_cast<std::size_t>(mode_.height)
+            : 1;
+    const bool corrupt = (buffer.flags & V4L2_BUF_FLAG_ERROR) != 0 || bytesUsed < minimumBytes ||
+                         bytesUsed > mapped.length;
+    if (corrupt) {
+        ++corruptFramesSkipped_;
+        return queueBuffer(buffer.index) ? CaptureStatus::Timeout : CaptureStatus::Disconnected;
+    }
+
+    frame.format = mode_.format;
+    frame.width = mode_.width;
+    frame.height = mode_.height;
+    frame.stride = stride_;
+    frame.sequence = buffer.sequence;
+    frame.dequeueTime = dequeueTime;
+
+    const bool monotonic = (buffer.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK) ==
+                           V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+    if (monotonic) {
+        frame.captureTime = toTimePoint(buffer.timestamp);
+    } else {
+        frame.captureTime = dequeueTime;
+        if (!warnedAboutTimestamps_) {
+            log::warning("Driver timestamps are not monotonic; frame age will read as zero");
+            warnedAboutTimestamps_ = true;
+        }
+    }
+
+    // Copy out and return the buffer immediately so the driver never runs out of buffers
+    // while we decode or render.
+    frame.data.resize(bytesUsed);
+    std::memcpy(frame.data.data(), mapped.start, bytesUsed);
+
+    return queueBuffer(buffer.index) ? CaptureStatus::Ok : CaptureStatus::Disconnected;
 }
 
 void V4l2Camera::queryCapabilities() {
@@ -225,6 +342,95 @@ void V4l2Camera::negotiateFrameRate() {
     mode_.fps = interval.numerator != 0
                     ? static_cast<double>(interval.denominator) / interval.numerator
                     : 0.0;
+}
+
+void V4l2Camera::startStreaming() {
+    v4l2_requestbuffers request{};
+    request.count = kRequestedBufferCount;
+    request.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    request.memory = V4L2_MEMORY_MMAP;
+    if (xioctl(fd_.get(), VIDIOC_REQBUFS, &request) == -1) {
+        const int error = errno;
+        throwErrno("VIDIOC_REQBUFS on " + devicePath_ + openErrorHint(error), error);
+    }
+    if (request.count < kMinBufferCount) {
+        throw CameraError("The driver allocated only " + std::to_string(request.count) +
+                          " buffer(s); at least 2 are required");
+    }
+
+    buffers_.reserve(request.count);
+    for (std::uint32_t index = 0; index < request.count; ++index) {
+        v4l2_buffer buffer = makeBuffer();
+        buffer.index = index;
+        if (xioctl(fd_.get(), VIDIOC_QUERYBUF, &buffer) == -1) {
+            const int error = errno;
+            throwErrno("VIDIOC_QUERYBUF on " + devicePath_, error);
+        }
+
+        void* start = ::mmap(nullptr, buffer.length, PROT_READ | PROT_WRITE, MAP_SHARED,
+                             fd_.get(), static_cast<off_t>(buffer.m.offset));
+        if (start == MAP_FAILED) {
+            const int error = errno;
+            throwErrno("mmap of buffer " + std::to_string(index), error);
+        }
+        buffers_.push_back(MappedBuffer{start, buffer.length});
+
+        if (!queueBuffer(index)) {
+            throw CameraError("Cannot queue buffer " + std::to_string(index));
+        }
+    }
+
+    v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    if (xioctl(fd_.get(), VIDIOC_STREAMON, &type) == -1) {
+        const int error = errno;
+        throwErrno("VIDIOC_STREAMON on " + devicePath_ + openErrorHint(error), error);
+    }
+    streaming_ = true;
+    staleFramesSkipped_ = 0;
+    corruptFramesSkipped_ = 0;
+}
+
+void V4l2Camera::stopStreaming() noexcept {
+    if (!fd_) {
+        return;
+    }
+
+    // Errors are ignored on purpose: this also runs after the device has disappeared.
+    if (streaming_) {
+        v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        static_cast<void>(xioctl(fd_.get(), VIDIOC_STREAMOFF, &type));
+        streaming_ = false;
+
+        try {
+            log::info("Streaming stopped: ", staleFramesSkipped_, " stale and ",
+                      corruptFramesSkipped_, " corrupt frames skipped");
+        } catch (...) {
+            // Logging must never turn cleanup into a crash.
+        }
+    }
+
+    for (const MappedBuffer& buffer : buffers_) {
+        ::munmap(buffer.start, buffer.length);
+    }
+    if (!buffers_.empty()) {
+        v4l2_requestbuffers request{};
+        request.count = 0; // Releases the driver's buffers.
+        request.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        request.memory = V4L2_MEMORY_MMAP;
+        static_cast<void>(xioctl(fd_.get(), VIDIOC_REQBUFS, &request));
+    }
+    buffers_.clear();
+}
+
+bool V4l2Camera::queueBuffer(std::uint32_t index) {
+    v4l2_buffer buffer = makeBuffer();
+    buffer.index = index;
+    if (xioctl(fd_.get(), VIDIOC_QBUF, &buffer) == -1) {
+        const int error = errno;
+        log::error("VIDIOC_QBUF on ", devicePath_, " failed: ", errnoText(error));
+        return false;
+    }
+    return true;
 }
 
 } // namespace camview
