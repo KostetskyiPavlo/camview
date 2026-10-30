@@ -213,10 +213,20 @@ CaptureStatus V4l2Camera::capture(Frame& frame, std::chrono::milliseconds timeou
         mode_.format == PixelFormat::Yuyv
             ? static_cast<std::size_t>(stride_) * static_cast<std::size_t>(mode_.height)
             : 1;
-    const bool corrupt = (buffer.flags & V4L2_BUF_FLAG_ERROR) != 0 || bytesUsed < minimumBytes ||
-                         bytesUsed > mapped.length;
-    if (corrupt) {
-        ++corruptFramesSkipped_;
+    const bool errorFlag = (buffer.flags & V4L2_BUF_FLAG_ERROR) != 0;
+    const bool badSize = bytesUsed < minimumBytes || bytesUsed > mapped.length;
+    if (errorFlag || badSize) {
+        if (errorFlag) {
+            ++errorFlagFrames_;
+        } else {
+            ++truncatedFrames_;
+        }
+        // Details of the first few bad frames are enough to see the pattern.
+        if (errorFlagFrames_ + truncatedFrames_ <= 5) {
+            log::warning("Skipping frame #", buffer.sequence, ": ",
+                         errorFlag ? "driver error flag" : "wrong size", ", ", bytesUsed,
+                         " of ", minimumBytes, " bytes");
+        }
         return queueBuffer(buffer.index) ? CaptureStatus::Timeout : CaptureStatus::Disconnected;
     }
 
@@ -387,7 +397,8 @@ void V4l2Camera::startStreaming() {
     }
     streaming_ = true;
     staleFramesSkipped_ = 0;
-    corruptFramesSkipped_ = 0;
+    errorFlagFrames_ = 0;
+    truncatedFrames_ = 0;
 }
 
 void V4l2Camera::stopStreaming() noexcept {
@@ -402,8 +413,9 @@ void V4l2Camera::stopStreaming() noexcept {
         streaming_ = false;
 
         try {
-            log::info("Streaming stopped: ", staleFramesSkipped_, " stale and ",
-                      corruptFramesSkipped_, " corrupt frames skipped");
+            log::info("Streaming stopped: ", staleFramesSkipped_, " stale frames skipped, ",
+                      errorFlagFrames_, " with driver error flag, ", truncatedFrames_,
+                      " truncated");
         } catch (...) {
             // Logging must never turn cleanup into a crash.
         }

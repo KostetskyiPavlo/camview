@@ -60,7 +60,8 @@ private:
     bool warnedAboutTimestamps_{false};
 
     std::uint64_t staleFramesSkipped_{0};   // Older frames replaced by a newer one in the queue.
-    std::uint64_t corruptFramesSkipped_{0}; // Frames flagged as broken or truncated by the driver.
+    std::uint64_t errorFlagFrames_{0}; // Frames flagged with V4L2_BUF_FLAG_ERROR by the driver.
+    std::uint64_t truncatedFrames_{0}; // Frames with fewer (or more) bytes than a full image.
 };
 
 } // namespace camview

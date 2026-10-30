@@ -21,6 +21,8 @@ int run(int argc, char** argv) {
     const int width = argc > 3 ? std::stoi(argv[3]) : 640;
     const int height = argc > 4 ? std::stoi(argv[4]) : 480;
     const double fps = argc > 5 ? std::stod(argv[5]) : 30.0;
+        // Temporary diagnostic switch for the corrupt-frame investigation.
+    const bool renderEnabled = !(argc > 6 && std::string_view(argv[6]) == "norender");
 
     log::info("camview ", CAMVIEW_VERSION);
 
@@ -59,7 +61,9 @@ int run(int argc, char** argv) {
         haveSequence = true;
 
         if (frame.format == PixelFormat::Yuyv) {
-            renderer.render(frame);
+            if (renderEnabled) {
+                renderer.render(frame);
+            }
         }
 
         const TimePoint now = Clock::now();
