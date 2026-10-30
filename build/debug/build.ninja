@@ -49,6 +49,13 @@ cmake_ninja_workdir = /home/pav/projects/camview/build/debug/
 
 build cmake_object_order_depends_target_camview_core: phony || CMakeFiles/camview_core.dir
 
+build CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/app/CliParser.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT
+  INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/app
+
 build CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/CameraMode.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o.d
   FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT
@@ -106,7 +113,7 @@ build CMakeFiles/camview_core.dir/src/util/Log.cpp.o: CXX_COMPILER__camview_core
 #############################################
 # Link the static library libcamview_core.a
 
-build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
+build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = CMakeFiles/camview_core.dir
   POST_BUILD = :
