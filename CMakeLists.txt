@@ -75,6 +75,7 @@ endif()
 # Core library: everything except main(). Tests link against it too.
 # ---------------------------------------------------------------------------
 add_library(camview_core STATIC
+    src/app/App.cpp
     src/app/CliParser.cpp
     src/camera/CameraMode.cpp
     src/camera/TestPatternSource.cpp

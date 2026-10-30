@@ -16,6 +16,7 @@ struct Config {
     double fps{30.0};
     bool testPattern{false}; // Synthetic source instead of a camera.
     bool display{true};      // false: capture and decode without a window (benchmarking).
+    int extraRenderDelayMs{0}; // Test aid: sleep after each frame to simulate a slow consumer.
 };
 
 } // namespace camview

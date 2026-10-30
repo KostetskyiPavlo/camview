@@ -27,6 +27,8 @@ constexpr int kOptionFormat = 1003;
 constexpr int kOptionTestPattern = 1004;
 constexpr int kOptionNoDisplay = 1005;
 constexpr int kOptionVersion = 1006;
+constexpr int kOptionExtraRenderDelay = 1007;
+constexpr int kMaxExtraRenderDelayMs = 1000;
 
 const option kLongOptions[] = {
     {"device", required_argument, nullptr, 'd'},
@@ -36,6 +38,7 @@ const option kLongOptions[] = {
     {"format", required_argument, nullptr, kOptionFormat},
     {"test-pattern", no_argument, nullptr, kOptionTestPattern},
     {"no-display", no_argument, nullptr, kOptionNoDisplay},
+    {"extra-render-delay", required_argument, nullptr, kOptionExtraRenderDelay},
     {"help", no_argument, nullptr, 'h'},
     {"version", no_argument, nullptr, kOptionVersion},
     {nullptr, 0, nullptr, 0},
@@ -181,6 +184,16 @@ CliResult parseCommandLine(int argc, char* argv[]) {
         case kOptionNoDisplay:
             config.display = false;
             break;
+        case kOptionExtraRenderDelay: {
+            const auto delay = parseInt(value);
+            if (!delay || *delay < 0 || *delay > kMaxExtraRenderDelayMs) {
+                return makeError("--extra-render-delay must be an integer from 0 to 1000 (ms), "
+                                 "got '" +
+                                 std::string(value) + "'");
+            }
+            config.extraRenderDelayMs = *delay;
+            break;
+        }
         case 'h':
             result.action = CliResult::Action::Help;
             return result;
@@ -226,6 +239,8 @@ std::string usageText(std::string_view programName) {
         << ")\n"
         << "      --test-pattern   synthetic source instead of a camera\n"
         << "      --no-display     capture and decode without a window (benchmarking)\n"
+        << "      --extra-render-delay MS  test aid: sleep MS after each frame to simulate a\n"
+        << "                       slow consumer; frames get dropped, latency must not grow\n"
         << "  -h, --help           show this help and exit\n"
         << "      --version        show the version and exit\n"
         << "\n"
