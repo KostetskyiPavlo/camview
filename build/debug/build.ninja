@@ -70,6 +70,13 @@ build CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o: CXX_COMPILER__cam
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/camera
 
+build CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/decode/MjpegDecoder.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT
+  INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/decode
+
 build CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/frame/PixelFormat.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o.d
   FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -D_REENTRANT
@@ -99,7 +106,7 @@ build CMakeFiles/camview_core.dir/src/util/Log.cpp.o: CXX_COMPILER__camview_core
 #############################################
 # Link the static library libcamview_core.a
 
-build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
+build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = CMakeFiles/camview_core.dir
   POST_BUILD = :
@@ -132,9 +139,9 @@ build CMakeFiles/camview.dir/src/main.cpp.o: CXX_COMPILER__camview_unscanned_Deb
 #############################################
 # Link the executable camview
 
-build camview: CXX_EXECUTABLE_LINKER__camview_Debug CMakeFiles/camview.dir/src/main.cpp.o | libcamview_core.a /usr/lib/x86_64-linux-gnu/libSDL2.so || libcamview_core.a
+build camview: CXX_EXECUTABLE_LINKER__camview_Debug CMakeFiles/camview.dir/src/main.cpp.o | libcamview_core.a /usr/lib/x86_64-linux-gnu/libSDL2.so /usr/lib/x86_64-linux-gnu/libturbojpeg.so || libcamview_core.a
   FLAGS = -g
-  LINK_LIBRARIES = libcamview_core.a  /usr/lib/x86_64-linux-gnu/libSDL2.so
+  LINK_LIBRARIES = libcamview_core.a  /usr/lib/x86_64-linux-gnu/libSDL2.so  /usr/lib/x86_64-linux-gnu/libturbojpeg.so
   OBJECT_DIR = CMakeFiles/camview.dir
   POST_BUILD = :
   PRE_LINK = :

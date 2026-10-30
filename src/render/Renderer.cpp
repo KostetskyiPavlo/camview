@@ -17,12 +17,13 @@ Uint32 toSdlPixelFormat(PixelFormat format) {
     switch (format) {
     case PixelFormat::Yuyv:
         return SDL_PIXELFORMAT_YUY2;
-    case PixelFormat::Mjpeg:
     case PixelFormat::I420:
+        return SDL_PIXELFORMAT_IYUV;
+    case PixelFormat::Mjpeg:
         break;
     }
     throw RenderError("Renderer: pixel format " + std::string(toString(format)) +
-                      " is not supported for display");
+                      " must be decoded before rendering");
 }
 
 const char* orUnknown(const char* text) {
@@ -108,16 +109,8 @@ bool Renderer::pollQuitRequested() {
 
 void Renderer::render(const Frame& frame) {
     ensureTexture(frame);
+    uploadFrame(frame);
 
-    const auto requiredBytes =
-        static_cast<std::size_t>(frame.stride) * static_cast<std::size_t>(frame.height);
-    if (frame.data.size() < requiredBytes) {
-        throw RenderError("Renderer: frame buffer is smaller than stride * height");
-    }
-
-    if (SDL_UpdateTexture(texture_.get(), nullptr, frame.data.data(), frame.stride) != 0) {
-        throwSdlError("SDL_UpdateTexture");
-    }
     if (SDL_RenderClear(renderer_.get()) != 0) {
         throwSdlError("SDL_RenderClear");
     }
@@ -152,6 +145,39 @@ void Renderer::ensureTexture(const Frame& frame) {
     log::info("Texture: ", toString(frame.format), " ", frame.width, "x", frame.height,
               supportsTextureFormat(sdlFormat) ? " (native, converted on GPU)"
                                                : " (not native, SDL converts on CPU)");
+}
+
+void Renderer::uploadFrame(const Frame& frame) {
+    switch (frame.format) {
+    case PixelFormat::Yuyv: {
+        const auto requiredBytes =
+            static_cast<std::size_t>(frame.stride) * static_cast<std::size_t>(frame.height);
+        if (frame.data.size() < requiredBytes) {
+            throw RenderError("Renderer: YUYV frame is smaller than stride * height");
+        }
+        if (SDL_UpdateTexture(texture_.get(), nullptr, frame.data.data(), frame.stride) != 0) {
+            throwSdlError("SDL_UpdateTexture");
+        }
+        return;
+    }
+    case PixelFormat::I420: {
+        const I420Layout layout = i420Layout(frame.width, frame.height);
+        if (frame.data.size() < layout.totalBytes) {
+            throw RenderError("Renderer: I420 frame is smaller than its three planes");
+        }
+        const std::uint8_t* planeY = frame.data.data();
+        const std::uint8_t* planeU = planeY + layout.lumaBytes;
+        const std::uint8_t* planeV = planeU + layout.chromaBytes;
+        if (SDL_UpdateYUVTexture(texture_.get(), nullptr, planeY, frame.width, planeU,
+                                 layout.chromaWidth, planeV, layout.chromaWidth) != 0) {
+            throwSdlError("SDL_UpdateYUVTexture");
+        }
+        return;
+    }
+    case PixelFormat::Mjpeg:
+        break;
+    }
+    throw RenderError("Renderer: MJPG frames must be decoded before rendering");
 }
 
 bool Renderer::supportsTextureFormat(std::uint32_t sdlFormat) const {

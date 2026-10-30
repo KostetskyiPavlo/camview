@@ -78,6 +78,7 @@ add_library(camview_core STATIC
     src/camera/CameraMode.cpp
     src/camera/TestPatternSource.cpp
     src/camera/V4l2Camera.cpp
+    src/decode/MjpegDecoder.cpp
     src/frame/PixelFormat.cpp
     src/render/Renderer.cpp
     src/util/Log.cpp)
@@ -85,7 +86,8 @@ add_library(camview_core STATIC
 target_include_directories(camview_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(camview_core
     PUBLIC Threads::Threads
-    PRIVATE camview_options PkgConfig::SDL2)
+    PRIVATE camview_options PkgConfig::SDL2 PkgConfig::TURBOJPEG)
+
 # ---------------------------------------------------------------------------
 # Application
 # ---------------------------------------------------------------------------

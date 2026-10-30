@@ -60,6 +60,7 @@ private:
     };
 
     void ensureTexture(const Frame& frame);
+    void uploadFrame(const Frame& frame);
     [[nodiscard]] bool supportsTextureFormat(std::uint32_t sdlFormat) const;
 
     // Declaration order matters: members are destroyed in reverse order, so the texture goes
