@@ -3,13 +3,17 @@
 #include "camera/TestPatternSource.hpp"
 #include "camera/V4l2Camera.hpp"
 #include "decode/MjpegDecoder.hpp"
-#include "stats/FpsCounter.hpp"
+#include "stats/CsvLogger.hpp"
+#include "stats/PipelineStats.hpp"
 #include "util/Clock.hpp"
 #include "util/Log.hpp"
 
 #include <csignal>
+#include <cstdio>
 #include <exception>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace camview {
 
@@ -18,6 +22,9 @@ namespace {
 // Short timeouts keep both loops responsive to quit requests even when no frames arrive.
 constexpr auto kCaptureTimeout = std::chrono::milliseconds(100);
 constexpr auto kTakeTimeout = std::chrono::milliseconds(100);
+
+// Without a single valid frame for this long, tell the user instead of staying silent.
+constexpr auto kStallThreshold = std::chrono::seconds(2);
 
 static_assert(std::atomic<std::uint32_t>::is_always_lock_free,
               "the frame counter must be lock-free on every target");
@@ -37,6 +44,26 @@ std::unique_ptr<CameraSource> makeSource(const Config& config) {
         config.device, CameraMode{config.format, config.width, config.height, config.fps});
 }
 
+double toSeconds(Duration duration) {
+    return std::chrono::duration<double>(duration).count();
+}
+
+std::vector<std::string> makeOverlayLines(double captureFps, const StatsSummary& summary,
+                                          std::uint64_t dropped) {
+    char line[64];
+    std::vector<std::string> lines;
+    std::snprintf(line, sizeof(line), "CAP %.1f FPS  DISP %.1f FPS", captureFps,
+                  summary.displayFps);
+    lines.emplace_back(line);
+    std::snprintf(line, sizeof(line), "AGE %.0f MS  MAX %.0f MS", summary.avgTotalMs,
+                  summary.maxTotalMs);
+    lines.emplace_back(line);
+    std::snprintf(line, sizeof(line), "DEC %.1f MS  DROP %llu", summary.avgDecodeMs,
+                  static_cast<unsigned long long>(dropped));
+    lines.emplace_back(line);
+    return lines;
+}
+
 } // namespace
 
 App::App(Config config) : config_(std::move(config)) {}
@@ -54,6 +81,12 @@ int App::run() {
         log::info("Display disabled; stop with Ctrl+C");
     }
 
+    std::optional<CsvLogger> csv;
+    if (!config_.statsCsvPath.empty()) {
+        csv.emplace(config_.statsCsvPath);
+        log::info("Writing per-frame timings to ", config_.statsCsvPath);
+    }
+
     source_ = makeSource(config_);
     source_->open();
     const CameraMode mode = source_->mode();
@@ -63,13 +96,13 @@ int App::run() {
     captureThread_ = std::jthread([this](std::stop_token token) { captureLoop(token); });
 
     MjpegDecoder decoder;
+    PipelineStats stats;
     Frame received;
     Frame decoded;
-    FpsCounter displayFps;
-    std::uint32_t capturedAtWindowStart = 0;
-    TimePoint windowStart = Clock::now();
-    Duration decodeTime{};
-    int decodedInWindow = 0;
+    std::vector<std::string> overlayLines;
+    std::uint32_t capturedAtWindowStart = capturedFrames_.load(std::memory_order_relaxed);
+    TimePoint lastFrameTime = Clock::now();
+    bool stallReported = false;
     int exitCode = 0;
     const auto extraDelay = std::chrono::milliseconds(config_.extraRenderDelayMs);
 
@@ -80,52 +113,68 @@ int App::run() {
                 exitCode = 1;
                 break;
             }
+            const Duration sinceLastFrame = Clock::now() - lastFrameTime;
+            if (!stallReported && sinceLastFrame > kStallThreshold) {
+                log::warning("No valid frames for ", toSeconds(sinceLastFrame),
+                             " s: the camera stalled or every frame is being rejected");
+                stallReported = true;
+            }
             continue;
         }
 
+        const TimePoint taken = Clock::now();
+        if (stallReported) {
+            log::info("Frames are flowing again after ", toSeconds(taken - lastFrameTime), " s");
+            stallReported = false;
+        }
+        lastFrameTime = taken;
+
         const Frame* frameToShow = &received;
+        Duration decodeTime{};
         if (received.format == PixelFormat::Mjpeg) {
-            const TimePoint decodeStart = Clock::now();
             if (!decoder.decode(received, decoded)) {
                 continue;
             }
-            decodeTime += Clock::now() - decodeStart;
-            ++decodedInWindow;
+            decodeTime = Clock::now() - taken;
             frameToShow = &decoded;
         }
 
+        const TimePoint renderStart = Clock::now();
         if (renderer_) {
-            renderer_->render(*frameToShow);
+            renderer_->render(*frameToShow, overlayLines);
         }
         const TimePoint presented = Clock::now();
-        const double ageMs = toMilliseconds(presented - frameToShow->captureTime);
+
+        const FrameTimings timings{
+            received.dequeueTime - received.captureTime, // transfer
+            taken - received.dequeueTime,                // queue
+            decodeTime,                                  // decode
+            presented - renderStart,                     // render
+            presented - received.captureTime,            // total
+        };
+        stats.addFrame(timings, presented);
+        if (csv) {
+            csv->write(received.sequence, timings, slot_.dropped());
+        }
 
         if (extraDelay.count() > 0) {
             std::this_thread::sleep_for(extraDelay); // Test aid: simulate a slow consumer.
         }
 
-        if (const auto displayedFps = displayFps.tick(presented)) {
+        if (const auto summary = stats.poll(presented)) {
             // Unsigned subtraction stays correct even after the counter wraps around.
             const std::uint32_t captured = capturedFrames_.load(std::memory_order_relaxed);
-            const double seconds = std::chrono::duration<double>(presented - windowStart).count();
             const double captureFps =
-                static_cast<double>(captured - capturedAtWindowStart) / seconds;
-
-            if (decodedInWindow > 0) {
-                log::info("Capture ", captureFps, " fps, display ", *displayedFps,
-                          " fps (driver reports ", mode.fps, "), frame age ", ageMs,
-                          " ms, decode ", toMilliseconds(decodeTime) / decodedInWindow,
-                          " ms, dropped so far ", slot_.dropped());
-            } else {
-                log::info("Capture ", captureFps, " fps, display ", *displayedFps,
-                          " fps (driver reports ", mode.fps, "), frame age ", ageMs,
-                          " ms, dropped so far ", slot_.dropped());
-            }
-
+                static_cast<double>(captured - capturedAtWindowStart) / summary->windowSeconds;
             capturedAtWindowStart = captured;
-            windowStart = presented;
-            decodeTime = Duration{};
-            decodedInWindow = 0;
+            const std::uint64_t dropped = slot_.dropped();
+
+            log::info("Capture ", captureFps, " fps, display ", summary->displayFps,
+                      " fps | age avg ", summary->avgTotalMs, " max ", summary->maxTotalMs,
+                      " ms = transfer ", summary->avgTransferMs, " + queue ", summary->avgQueueMs,
+                      " + decode ", summary->avgDecodeMs, " + render ", summary->avgRenderMs,
+                      " | dropped ", dropped);
+            overlayLines = makeOverlayLines(captureFps, *summary, dropped);
         }
     }
 

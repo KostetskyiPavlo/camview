@@ -28,6 +28,7 @@ constexpr int kOptionTestPattern = 1004;
 constexpr int kOptionNoDisplay = 1005;
 constexpr int kOptionVersion = 1006;
 constexpr int kOptionExtraRenderDelay = 1007;
+constexpr int kOptionStatsCsv = 1008;
 constexpr int kMaxExtraRenderDelayMs = 1000;
 
 const option kLongOptions[] = {
@@ -39,6 +40,7 @@ const option kLongOptions[] = {
     {"test-pattern", no_argument, nullptr, kOptionTestPattern},
     {"no-display", no_argument, nullptr, kOptionNoDisplay},
     {"extra-render-delay", required_argument, nullptr, kOptionExtraRenderDelay},
+    {"stats-csv", required_argument, nullptr, kOptionStatsCsv},
     {"help", no_argument, nullptr, 'h'},
     {"version", no_argument, nullptr, kOptionVersion},
     {nullptr, 0, nullptr, 0},
@@ -194,6 +196,12 @@ CliResult parseCommandLine(int argc, char* argv[]) {
             config.extraRenderDelayMs = *delay;
             break;
         }
+        case kOptionStatsCsv:
+            if (value.empty()) {
+                return makeError("--stats-csv needs a file path");
+            }
+            config.statsCsvPath = std::string(value);
+            break;
         case 'h':
             result.action = CliResult::Action::Help;
             return result;
@@ -241,6 +249,7 @@ std::string usageText(std::string_view programName) {
         << "      --no-display     capture and decode without a window (benchmarking)\n"
         << "      --extra-render-delay MS  test aid: sleep MS after each frame to simulate a\n"
         << "                       slow consumer; frames get dropped, latency must not grow\n"
+        << "      --stats-csv PATH write per-frame timings to a CSV file\n"
         << "  -h, --help           show this help and exit\n"
         << "      --version        show the version and exit\n"
         << "\n"

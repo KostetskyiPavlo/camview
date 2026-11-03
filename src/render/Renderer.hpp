@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 // Forward declarations keep SDL headers out of every file that includes Renderer.hpp.
 struct SDL_Window;
@@ -37,9 +38,9 @@ public:
     // Esc, q, closing the window or SIGINT (SDL turns Ctrl+C into a quit event).
     [[nodiscard]] bool pollQuitRequested();
 
-    // Uploads the frame to the GPU and presents it. Throws RenderError on SDL failures or
-    // when the frame's pixel format cannot be displayed directly.
-    void render(const Frame& frame);
+    // Uploads the frame to the GPU, draws `overlayLines` on top and presents the result.
+    // Throws RenderError on SDL failures or when the frame's format cannot be displayed.
+    void render(const Frame& frame, const std::vector<std::string>& overlayLines = {});
 
 private:
     // Calls SDL_Init in the constructor and SDL_Quit in the destructor.
@@ -61,6 +62,7 @@ private:
 
     void ensureTexture(const Frame& frame);
     void uploadFrame(const Frame& frame);
+    void drawOverlay(const std::vector<std::string>& lines);
     [[nodiscard]] bool supportsTextureFormat(std::uint32_t sdlFormat) const;
 
     // Declaration order matters: members are destroyed in reverse order, so the texture goes

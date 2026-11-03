@@ -82,7 +82,10 @@ add_library(camview_core STATIC
     src/camera/V4l2Camera.cpp
     src/decode/MjpegDecoder.cpp
     src/frame/PixelFormat.cpp
+    src/render/Overlay.cpp
     src/render/Renderer.cpp
+    src/stats/CsvLogger.cpp
+    src/stats/PipelineStats.cpp
     src/util/Log.cpp)
 
 target_include_directories(camview_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

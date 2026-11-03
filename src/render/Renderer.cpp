@@ -1,9 +1,11 @@
 #include "render/Renderer.hpp"
+#include "render/Overlay.hpp"
 #include "util/Log.hpp"
 
 #include <SDL2/SDL.h>
 
 #include <string>
+#include <algorithm>
 
 namespace camview {
 
@@ -107,7 +109,7 @@ bool Renderer::pollQuitRequested() {
     return quitRequested;
 }
 
-void Renderer::render(const Frame& frame) {
+void Renderer::render(const Frame& frame, const std::vector<std::string>& overlayLines) {
     ensureTexture(frame);
     uploadFrame(frame);
 
@@ -117,6 +119,7 @@ void Renderer::render(const Frame& frame) {
     if (SDL_RenderCopy(renderer_.get(), texture_.get(), nullptr, nullptr) != 0) {
         throwSdlError("SDL_RenderCopy");
     }
+    drawOverlay(overlayLines);
     SDL_RenderPresent(renderer_.get());
 }
 
@@ -145,6 +148,19 @@ void Renderer::ensureTexture(const Frame& frame) {
     log::info("Texture: ", toString(frame.format), " ", frame.width, "x", frame.height,
               supportsTextureFormat(sdlFormat) ? " (native, converted on GPU)"
                                                : " (not native, SDL converts on CPU)");
+}
+
+bool Renderer::supportsTextureFormat(std::uint32_t sdlFormat) const {
+    SDL_RendererInfo info{};
+    if (SDL_GetRendererInfo(renderer_.get(), &info) != 0) {
+        return false;
+    }
+    for (Uint32 i = 0; i < info.num_texture_formats; ++i) {
+        if (info.texture_formats[i] == sdlFormat) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Renderer::uploadFrame(const Frame& frame) {
@@ -180,17 +196,39 @@ void Renderer::uploadFrame(const Frame& frame) {
     throw RenderError("Renderer: MJPG frames must be decoded before rendering");
 }
 
-bool Renderer::supportsTextureFormat(std::uint32_t sdlFormat) const {
-    SDL_RendererInfo info{};
-    if (SDL_GetRendererInfo(renderer_.get(), &info) != 0) {
-        return false;
+void Renderer::drawOverlay(const std::vector<std::string>& lines) {
+    if (lines.empty()) {
+        return;
     }
-    for (Uint32 i = 0; i < info.num_texture_formats; ++i) {
-        if (info.texture_formats[i] == sdlFormat) {
-            return true;
-        }
+
+    // Coordinates are in video pixels (logical size), so the overlay scales with the window.
+    const int scale = std::max(1, textureHeight_ / 240);
+    const int padding = 2 * scale;
+    const int lineHeight = overlay::kLineAdvance * scale;
+
+    int width = 0;
+    std::vector<OverlayRect> rects;
+    for (std::size_t i = 0; i < lines.size(); ++i) {
+        width = std::max(width, overlay::textWidth(lines[i], scale));
+        overlay::layoutText(lines[i], padding, padding + static_cast<int>(i) * lineHeight, scale,
+                            rects);
     }
-    return false;
+
+    // Overlay drawing failures are not worth stopping the video for, so results are ignored.
+    SDL_Renderer* sdl = renderer_.get();
+    static_cast<void>(SDL_SetRenderDrawBlendMode(sdl, SDL_BLENDMODE_BLEND));
+    static_cast<void>(SDL_SetRenderDrawColor(sdl, 0, 0, 0, 160));
+    const SDL_Rect background{0, 0, width + 2 * padding,
+                              static_cast<int>(lines.size()) * lineHeight + padding};
+    static_cast<void>(SDL_RenderFillRect(sdl, &background));
+
+    static_cast<void>(SDL_SetRenderDrawColor(sdl, 255, 255, 255, 255));
+    for (const OverlayRect& rect : rects) {
+        const SDL_Rect sdlRect{rect.x, rect.y, rect.width, rect.height};
+        static_cast<void>(SDL_RenderFillRect(sdl, &sdlRect));
+    }
+
+    static_cast<void>(SDL_SetRenderDrawColor(sdl, 0, 0, 0, 255)); // Restore the clear colour.
 }
 
 } // namespace camview
