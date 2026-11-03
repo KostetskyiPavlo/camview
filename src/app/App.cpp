@@ -41,7 +41,8 @@ std::unique_ptr<CameraSource> makeSource(const Config& config) {
         return std::make_unique<TestPatternSource>(config.width, config.height, config.fps);
     }
     return std::make_unique<V4l2Camera>(
-        config.device, CameraMode{config.format, config.width, config.height, config.fps});
+        config.device, CameraMode{config.format, config.width, config.height, config.fps},
+        config.preferResolution ? ModePriority::Resolution : ModePriority::FrameRate);
 }
 
 double toSeconds(Duration duration) {

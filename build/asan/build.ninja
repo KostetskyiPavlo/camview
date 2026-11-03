@@ -49,6 +49,13 @@ cmake_ninja_workdir = /home/pav/projects/camview/build/asan/
 
 build cmake_object_order_depends_target_camview_core: phony || CMakeFiles/camview_core.dir
 
+build CMakeFiles/camview_core.dir/src/app/App.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/app/App.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/app/App.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/app
+
 build CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/app/CliParser.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o.d
   FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
@@ -58,6 +65,13 @@ build CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o: CXX_COMPILER__camview
 
 build CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/CameraMode.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/camera
+
+build CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/ModeSelector.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o.d
   FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
@@ -91,12 +105,33 @@ build CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o: CXX_COMPILER__cam
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/frame
 
+build CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/render/Overlay.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/render
+
 build CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/render/Renderer.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o.d
   FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/render
+
+build CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/stats/CsvLogger.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/stats
+
+build CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/stats/PipelineStats.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/stats
 
 build CMakeFiles/camview_core.dir/src/util/Log.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/util/Log.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/util/Log.cpp.o.d
@@ -113,7 +148,7 @@ build CMakeFiles/camview_core.dir/src/util/Log.cpp.o: CXX_COMPILER__camview_core
 #############################################
 # Link the static library libcamview_core.a
 
-build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
+build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/app/App.cpp.o CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = CMakeFiles/camview_core.dir
   POST_BUILD = :
@@ -158,6 +193,18 @@ build camview: CXX_EXECUTABLE_LINKER__camview_Debug CMakeFiles/camview.dir/src/m
 
 
 #############################################
+# Utility command for test
+
+build CMakeFiles/test.util: CUSTOM_COMMAND
+  COMMAND = cd /home/pav/projects/camview/build/asan && /usr/bin/ctest --force-new-ctest-process
+  DESC = Running tests...
+  pool = console
+  restat = 1
+
+build test: phony CMakeFiles/test.util
+
+
+#############################################
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
@@ -180,9 +227,86 @@ build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
 build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 # =============================================================================
+# Write statements declared in CMakeLists.txt:
+# /home/pav/projects/camview/CMakeLists.txt
+# =============================================================================
+
+# =============================================================================
+# Object build statements for EXECUTABLE target camview_tests
+
+
+#############################################
+# Order-only phony target for camview_tests
+
+build cmake_object_order_depends_target_camview_tests: phony || cmake_object_order_depends_target_camview_core
+
+build tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/ModeSelectorTest.cpp || cmake_object_order_depends_target_camview_tests
+  DEP_FILE = tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
+  INCLUDES = -I/home/pav/projects/camview/src
+  OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
+  OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target camview_tests
+
+
+#############################################
+# Link the executable tests/camview_tests
+
+build tests/camview_tests tests/camview_tests[1]_tests.cmake | ${cmake_ninja_workdir}tests/camview_tests[1]_tests.cmake: CXX_EXECUTABLE_LINKER__camview_tests_Debug tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o | libcamview_core.a /usr/lib/x86_64-linux-gnu/libgtest_main.a /usr/lib/x86_64-linux-gnu/libSDL2.so /usr/lib/x86_64-linux-gnu/libturbojpeg.so /usr/lib/x86_64-linux-gnu/libgtest.a || libcamview_core.a
+  FLAGS = -g
+  LINK_FLAGS = -fsanitize=address,undefined
+  LINK_LIBRARIES = libcamview_core.a  /usr/lib/x86_64-linux-gnu/libgtest_main.a  /usr/lib/x86_64-linux-gnu/libSDL2.so  /usr/lib/x86_64-linux-gnu/libturbojpeg.so  /usr/lib/x86_64-linux-gnu/libgtest.a
+  OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
+  POST_BUILD = cd /home/pav/projects/camview/build/asan/tests && /usr/bin/cmake -D TEST_TARGET=camview_tests -D TEST_EXECUTABLE=/home/pav/projects/camview/build/asan/tests/camview_tests -D TEST_EXECUTOR= -D TEST_WORKING_DIR=/home/pav/projects/camview/build/asan/tests -D TEST_EXTRA_ARGS= -D TEST_PROPERTIES= -D TEST_PREFIX= -D TEST_SUFFIX= -D TEST_FILTER= -D NO_PRETTY_TYPES=FALSE -D NO_PRETTY_VALUES=FALSE -D TEST_LIST=camview_tests_TESTS -D CTEST_FILE=/home/pav/projects/camview/build/asan/tests/camview_tests[1]_tests.cmake -D TEST_DISCOVERY_TIMEOUT=5 -D TEST_XML_OUTPUT_DIR= -P /usr/share/cmake-3.28/Modules/GoogleTestAddTests.cmake
+  PRE_LINK = :
+  RESTAT = 1
+  TARGET_FILE = tests/camview_tests
+  TARGET_PDB = camview_tests.dbg
+
+
+#############################################
+# Utility command for test
+
+build tests/CMakeFiles/test.util: CUSTOM_COMMAND
+  COMMAND = cd /home/pav/projects/camview/build/asan/tests && /usr/bin/ctest --force-new-ctest-process
+  DESC = Running tests...
+  pool = console
+  restat = 1
+
+build tests/test: phony tests/CMakeFiles/test.util
+
+
+#############################################
+# Utility command for edit_cache
+
+build tests/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /home/pav/projects/camview/build/asan/tests && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  DESC = No interactive CMake dialog available...
+  restat = 1
+
+build tests/edit_cache: phony tests/CMakeFiles/edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build tests/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /home/pav/projects/camview/build/asan/tests && /usr/bin/cmake --regenerate-during-build -S/home/pav/projects/camview -B/home/pav/projects/camview/build/asan
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build tests/rebuild_cache: phony tests/CMakeFiles/rebuild_cache.util
+
+# =============================================================================
 # Target aliases.
 
 build camview_core: phony libcamview_core.a
+
+build camview_tests: phony tests/camview_tests
 
 # =============================================================================
 # Folder targets.
@@ -192,7 +316,14 @@ build camview_core: phony libcamview_core.a
 #############################################
 # Folder: /home/pav/projects/camview/build/asan
 
-build all: phony libcamview_core.a camview
+build all: phony libcamview_core.a camview tests/all
+
+# =============================================================================
+
+#############################################
+# Folder: /home/pav/projects/camview/build/asan/tests
+
+build tests/all: phony tests/camview_tests
 
 # =============================================================================
 # Built-in targets
@@ -201,14 +332,14 @@ build all: phony libcamview_core.a camview
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /home/pav/projects/camview/CMakeLists.txt /usr/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake /usr/share/cmake-3.28/Modules/CheckIncludeFileCXX.cmake /usr/share/cmake-3.28/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.28/Modules/Compiler/GNU.cmake /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.28/Modules/FindPackageMessage.cmake /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake /usr/share/cmake-3.28/Modules/FindThreads.cmake /usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake /usr/share/cmake-3.28/Modules/Platform/Linux.cmake /usr/share/cmake-3.28/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.28.3/CMakeCXXCompiler.cmake CMakeFiles/3.28.3/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | /home/pav/projects/camview/CMakeLists.txt /home/pav/projects/camview/tests/CMakeLists.txt /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestConfig.cmake /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestConfigVersion.cmake /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestTargets-none.cmake /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestTargets.cmake /usr/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake /usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake /usr/share/cmake-3.28/Modules/CheckIncludeFileCXX.cmake /usr/share/cmake-3.28/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.28/Modules/Compiler/GNU.cmake /usr/share/cmake-3.28/Modules/FindGTest.cmake /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.28/Modules/FindPackageMessage.cmake /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake /usr/share/cmake-3.28/Modules/FindThreads.cmake /usr/share/cmake-3.28/Modules/GoogleTest.cmake /usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake /usr/share/cmake-3.28/Modules/Platform/Linux.cmake /usr/share/cmake-3.28/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.28.3/CMakeCXXCompiler.cmake CMakeFiles/3.28.3/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /home/pav/projects/camview/CMakeLists.txt /usr/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake /usr/share/cmake-3.28/Modules/CheckIncludeFileCXX.cmake /usr/share/cmake-3.28/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.28/Modules/Compiler/GNU.cmake /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.28/Modules/FindPackageMessage.cmake /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake /usr/share/cmake-3.28/Modules/FindThreads.cmake /usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake /usr/share/cmake-3.28/Modules/Platform/Linux.cmake /usr/share/cmake-3.28/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.28.3/CMakeCXXCompiler.cmake CMakeFiles/3.28.3/CMakeSystem.cmake: phony
+build /home/pav/projects/camview/CMakeLists.txt /home/pav/projects/camview/tests/CMakeLists.txt /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestConfig.cmake /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestConfigVersion.cmake /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestTargets-none.cmake /usr/lib/x86_64-linux-gnu/cmake/GTest/GTestTargets.cmake /usr/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake /usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake /usr/share/cmake-3.28/Modules/CheckIncludeFileCXX.cmake /usr/share/cmake-3.28/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.28/Modules/Compiler/GNU.cmake /usr/share/cmake-3.28/Modules/FindGTest.cmake /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.28/Modules/FindPackageMessage.cmake /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake /usr/share/cmake-3.28/Modules/FindThreads.cmake /usr/share/cmake-3.28/Modules/GoogleTest.cmake /usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake /usr/share/cmake-3.28/Modules/Platform/Linux.cmake /usr/share/cmake-3.28/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.28.3/CMakeCXXCompiler.cmake CMakeFiles/3.28.3/CMakeSystem.cmake: phony
 
 
 #############################################

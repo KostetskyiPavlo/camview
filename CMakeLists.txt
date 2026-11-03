@@ -78,6 +78,7 @@ add_library(camview_core STATIC
     src/app/App.cpp
     src/app/CliParser.cpp
     src/camera/CameraMode.cpp
+    src/camera/ModeSelector.cpp
     src/camera/TestPatternSource.cpp
     src/camera/V4l2Camera.cpp
     src/decode/MjpegDecoder.cpp
@@ -100,3 +101,18 @@ add_executable(camview src/main.cpp)
 
 target_link_libraries(camview PRIVATE camview_core camview_options)
 target_compile_definitions(camview PRIVATE CAMVIEW_VERSION="${PROJECT_VERSION}")
+
+# ---------------------------------------------------------------------------
+# Unit tests
+# ---------------------------------------------------------------------------
+option(CAMVIEW_BUILD_TESTS "Build unit tests (requires GoogleTest)" ON)
+if(CAMVIEW_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+# GCC on 32-bit ARM notes that std::span argument passing changed in GCC 7.1. That only
+# matters when mixing objects built by GCC older than 7.1, which never happens here.
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+    target_compile_options(camview_options INTERFACE -Wno-psabi)
+endif()

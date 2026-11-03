@@ -1,5 +1,6 @@
 #include "app/App.hpp"
 #include "app/CliParser.hpp"
+#include "camera/V4l2Camera.hpp"
 #include "util/Log.hpp"
 
 #include <cstdio>
@@ -25,6 +26,13 @@ int main(int argc, char** argv) {
     }
 
     try {
+        if (cli.config.listModes) {
+            for (const camview::CameraMode& mode :
+                 camview::V4l2Camera::listModes(cli.config.device)) {
+                std::printf("%s\n", camview::toString(mode).c_str());
+            }
+            return 0;
+        }
         camview::log::info("camview ", CAMVIEW_VERSION);
         camview::App app(cli.config);
         return app.run();

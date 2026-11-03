@@ -1,4 +1,9 @@
 /home/pav/projects/camview/build/debug/CMakeFiles/camview_core.dir
 /home/pav/projects/camview/build/debug/CMakeFiles/camview.dir
+/home/pav/projects/camview/build/debug/CMakeFiles/test.dir
 /home/pav/projects/camview/build/debug/CMakeFiles/edit_cache.dir
 /home/pav/projects/camview/build/debug/CMakeFiles/rebuild_cache.dir
+/home/pav/projects/camview/build/debug/tests/CMakeFiles/camview_tests.dir
+/home/pav/projects/camview/build/debug/tests/CMakeFiles/test.dir
+/home/pav/projects/camview/build/debug/tests/CMakeFiles/edit_cache.dir
+/home/pav/projects/camview/build/debug/tests/CMakeFiles/rebuild_cache.dir

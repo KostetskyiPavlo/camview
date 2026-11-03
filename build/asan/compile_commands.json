@@ -1,6 +1,12 @@
 [
 {
   "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT -o CMakeFiles/camview_core.dir/src/app/App.cpp.o -c /home/pav/projects/camview/src/app/App.cpp",
+  "file": "/home/pav/projects/camview/src/app/App.cpp",
+  "output": "CMakeFiles/camview_core.dir/src/app/App.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
   "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT -o CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o -c /home/pav/projects/camview/src/app/CliParser.cpp",
   "file": "/home/pav/projects/camview/src/app/CliParser.cpp",
   "output": "CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o"
@@ -10,6 +16,12 @@
   "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT -o CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o -c /home/pav/projects/camview/src/camera/CameraMode.cpp",
   "file": "/home/pav/projects/camview/src/camera/CameraMode.cpp",
   "output": "CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT -o CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o -c /home/pav/projects/camview/src/camera/ModeSelector.cpp",
+  "file": "/home/pav/projects/camview/src/camera/ModeSelector.cpp",
+  "output": "CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o"
 },
 {
   "directory": "/home/pav/projects/camview/build/asan",
@@ -37,9 +49,27 @@
 },
 {
   "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT -o CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o -c /home/pav/projects/camview/src/render/Overlay.cpp",
+  "file": "/home/pav/projects/camview/src/render/Overlay.cpp",
+  "output": "CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
   "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT -o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o -c /home/pav/projects/camview/src/render/Renderer.cpp",
   "file": "/home/pav/projects/camview/src/render/Renderer.cpp",
   "output": "CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT -o CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o -c /home/pav/projects/camview/src/stats/CsvLogger.cpp",
+  "file": "/home/pav/projects/camview/src/stats/CsvLogger.cpp",
+  "output": "CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -isystem /usr/include/SDL2 -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT -o CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o -c /home/pav/projects/camview/src/stats/PipelineStats.cpp",
+  "file": "/home/pav/projects/camview/src/stats/PipelineStats.cpp",
+  "output": "CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o"
 },
 {
   "directory": "/home/pav/projects/camview/build/asan",
@@ -52,5 +82,11 @@
   "command": "/usr/bin/c++ -DCAMVIEW_VERSION=\\\"0.1.0\\\" -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -o CMakeFiles/camview.dir/src/main.cpp.o -c /home/pav/projects/camview/src/main.cpp",
   "file": "/home/pav/projects/camview/src/main.cpp",
   "output": "CMakeFiles/camview.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1 -o tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o -c /home/pav/projects/camview/tests/ModeSelectorTest.cpp",
+  "file": "/home/pav/projects/camview/tests/ModeSelectorTest.cpp",
+  "output": "tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o"
 }
 ]

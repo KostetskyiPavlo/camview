@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
@@ -14,6 +15,7 @@
 #include <stdexcept>
 #include <system_error>
 #include <utility>
+#include <vector>
 
 namespace camview {
 
@@ -80,10 +82,114 @@ v4l2_buffer makeBuffer() {
     return buffer;
 }
 
+UniqueFd openDevice(const std::string& path) {
+    // O_NONBLOCK: dequeuing a frame returns EAGAIN instead of blocking forever; waiting is done
+    // with poll() and a timeout, so a dead camera can never hang the capture loop.
+    UniqueFd fd(::open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC));
+    if (!fd) {
+        const int error = errno;
+        throw CameraError("Cannot open " + path + ": " + errnoText(error) + openErrorHint(error));
+    }
+    return fd;
+}
+
+std::uint32_t snapToRange(std::uint32_t value, std::uint32_t minimum, std::uint32_t maximum,
+                          std::uint32_t step) {
+    const std::uint32_t clamped = std::clamp(value, minimum, maximum);
+    if (step <= 1) {
+        return clamped;
+    }
+    return minimum + (clamped - minimum) / step * step;
+}
+
+// Appends one mode per frame rate the driver lists for this format and size.
+void appendFrameRates(int fd, PixelFormat format, std::uint32_t fourcc, std::uint32_t width,
+                      std::uint32_t height, std::vector<CameraMode>& modes) {
+    const auto addMode = [&](double fps) {
+        modes.push_back({format, static_cast<int>(width), static_cast<int>(height), fps});
+    };
+    const auto toFps = [](const v4l2_fract& interval) {
+        return interval.numerator != 0
+                   ? static_cast<double>(interval.denominator) / interval.numerator
+                   : 0.0;
+    };
+
+    bool listed = false;
+    for (std::uint32_t index = 0;; ++index) {
+        v4l2_frmivalenum interval{};
+        interval.index = index;
+        interval.pixel_format = fourcc;
+        interval.width = width;
+        interval.height = height;
+        if (xioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &interval) == -1) {
+            break; // EINVAL marks the end of the list.
+        }
+        listed = true;
+        if (interval.type == V4L2_FRMIVAL_TYPE_DISCRETE) {
+            addMode(toFps(interval.discrete));
+            continue;
+        }
+        // Stepwise or continuous: one entry describes a range. Offer its fastest rate (the
+        // shortest interval) and its slowest one.
+        addMode(toFps(interval.stepwise.min));
+        addMode(toFps(interval.stepwise.max));
+        break;
+    }
+    if (!listed) {
+        addMode(0.0); // The driver does not enumerate rates: frame rate unknown.
+    }
+}
+
+// Every mode the device offers in a format camview can display.
+std::vector<CameraMode> enumerateModes(int fd, const CameraMode& requested) {
+    std::vector<CameraMode> modes;
+    for (std::uint32_t formatIndex = 0;; ++formatIndex) {
+        v4l2_fmtdesc description{};
+        description.index = formatIndex;
+        description.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        if (xioctl(fd, VIDIOC_ENUM_FMT, &description) == -1) {
+            break; // EINVAL marks the end of the list.
+        }
+        const auto format = pixelFormatFromFourcc(description.pixelformat);
+        if (!format || (*format != PixelFormat::Yuyv && *format != PixelFormat::Mjpeg)) {
+            continue;
+        }
+
+        for (std::uint32_t sizeIndex = 0;; ++sizeIndex) {
+            v4l2_frmsizeenum size{};
+            size.index = sizeIndex;
+            size.pixel_format = description.pixelformat;
+            if (xioctl(fd, VIDIOC_ENUM_FRAMESIZES, &size) == -1) {
+                break;
+            }
+            if (size.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
+                appendFrameRates(fd, *format, description.pixelformat, size.discrete.width,
+                                 size.discrete.height, modes);
+                continue;
+            }
+            // Stepwise or continuous: one entry describes a whole range of sizes. Offer the
+            // requested size snapped into the range, plus the range's extremes.
+            const v4l2_frmsize_stepwise& range = size.stepwise;
+            appendFrameRates(fd, *format, description.pixelformat,
+                             snapToRange(static_cast<std::uint32_t>(requested.width),
+                                         range.min_width, range.max_width, range.step_width),
+                             snapToRange(static_cast<std::uint32_t>(requested.height),
+                                         range.min_height, range.max_height, range.step_height),
+                             modes);
+            appendFrameRates(fd, *format, description.pixelformat, range.min_width,
+                             range.min_height, modes);
+            appendFrameRates(fd, *format, description.pixelformat, range.max_width,
+                             range.max_height, modes);
+            break;
+        }
+    }
+    return modes;
+}
+
 } // namespace
 
-V4l2Camera::V4l2Camera(std::string devicePath, CameraMode requested)
-    : devicePath_(std::move(devicePath)), requested_(requested) {
+V4l2Camera::V4l2Camera(std::string devicePath, CameraMode requested, ModePriority priority)
+    : devicePath_(std::move(devicePath)), requested_(requested), priority_(priority) {
     if (requested_.format != PixelFormat::Yuyv && requested_.format != PixelFormat::Mjpeg) {
         throw std::invalid_argument("V4l2Camera: only YUYV and MJPG can be requested from a camera");
     }
@@ -101,18 +207,10 @@ void V4l2Camera::open() {
         return;
     }
 
-    // O_NONBLOCK: dequeuing a frame returns EAGAIN instead of blocking forever; waiting is done
-    // with poll() and a timeout, so a dead camera can never hang the capture loop.
-    UniqueFd fd(::open(devicePath_.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC));
-    if (!fd) {
-        const int error = errno;
-        throw CameraError("Cannot open " + devicePath_ + ": " + errnoText(error) +
-                          openErrorHint(error));
-    }
-    fd_ = std::move(fd);
-
+    fd_ = openDevice(devicePath_);
     try {
         queryCapabilities();
+        selectTargetMode();
         negotiateFormat();
         negotiateFrameRate();
         startStreaming();
@@ -123,10 +221,13 @@ void V4l2Camera::open() {
 
     log::info("Opened ", description());
     log::info("Requested:  ", toString(requested_));
+    if (target_ != requested_) {
+        log::info("Selected:   ", toString(target_), " (closest mode the camera offers)");
+    }
     log::info("Negotiated: ", toString(mode_), " (stride ", stride_, " B, max frame ",
               maxFrameBytes_, " B, ", buffers_.size(), " buffers)");
-    if (mode_ != requested_) {
-        log::warning("The driver adjusted the requested mode");
+    if (mode_ != target_) {
+        log::warning("The driver adjusted the selected mode");
     }
 }
 
@@ -290,9 +391,9 @@ void V4l2Camera::queryCapabilities() {
 void V4l2Camera::negotiateFormat() {
     v4l2_format format{};
     format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    format.fmt.pix.width = static_cast<__u32>(requested_.width);
-    format.fmt.pix.height = static_cast<__u32>(requested_.height);
-    format.fmt.pix.pixelformat = toFourcc(requested_.format);
+    format.fmt.pix.width = static_cast<__u32>(target_.width);
+    format.fmt.pix.height = static_cast<__u32>(target_.height);
+    format.fmt.pix.pixelformat = toFourcc(target_.format);
     format.fmt.pix.field = V4L2_FIELD_ANY;
 
     // S_FMT is a negotiation: the driver replaces unsupported values with the closest ones it
@@ -331,7 +432,7 @@ void V4l2Camera::negotiateFrameRate() {
         // fractional rates such as 29.97 fps exact enough.
         parameters.parm.capture.timeperframe.numerator = 1000;
         parameters.parm.capture.timeperframe.denominator =
-            static_cast<__u32>(std::lround(requested_.fps * 1000.0));
+            static_cast<__u32>(std::lround(target_.fps * 1000.0));
         if (xioctl(fd_.get(), VIDIOC_S_PARM, &parameters) == -1) {
             const int error = errno;
             log::warning("VIDIOC_S_PARM failed (", errnoText(error),
@@ -443,6 +544,25 @@ bool V4l2Camera::queueBuffer(std::uint32_t index) {
         return false;
     }
     return true;
+}
+
+void V4l2Camera::selectTargetMode() {
+    const std::vector<CameraMode> modes = enumerateModes(fd_.get(), requested_);
+    if (const auto best = selectMode(modes, requested_, priority_)) {
+        target_ = *best;
+        log::info("Camera offers ", modes.size(), " modes in supported formats");
+    } else {
+        target_ = requested_;
+        log::warning("The camera lists no modes in supported formats; "
+                     "asking the driver for the requested one");
+    }
+}
+
+std::vector<CameraMode> V4l2Camera::listModes(const std::string& devicePath) {
+    V4l2Camera camera(devicePath, CameraMode{PixelFormat::Mjpeg, 640, 480, 30.0});
+    camera.fd_ = openDevice(devicePath);
+    camera.queryCapabilities();
+    return enumerateModes(camera.fd_.get(), camera.requested_);
 }
 
 } // namespace camview

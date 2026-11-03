@@ -29,6 +29,8 @@ constexpr int kOptionNoDisplay = 1005;
 constexpr int kOptionVersion = 1006;
 constexpr int kOptionExtraRenderDelay = 1007;
 constexpr int kOptionStatsCsv = 1008;
+constexpr int kOptionPrefer = 1009;
+constexpr int kOptionListModes = 1010;
 constexpr int kMaxExtraRenderDelayMs = 1000;
 
 const option kLongOptions[] = {
@@ -41,6 +43,8 @@ const option kLongOptions[] = {
     {"no-display", no_argument, nullptr, kOptionNoDisplay},
     {"extra-render-delay", required_argument, nullptr, kOptionExtraRenderDelay},
     {"stats-csv", required_argument, nullptr, kOptionStatsCsv},
+    {"prefer", required_argument, nullptr, kOptionPrefer},
+    {"list-modes", no_argument, nullptr, kOptionListModes},
     {"help", no_argument, nullptr, 'h'},
     {"version", no_argument, nullptr, kOptionVersion},
     {nullptr, 0, nullptr, 0},
@@ -202,6 +206,21 @@ CliResult parseCommandLine(int argc, char* argv[]) {
             }
             config.statsCsvPath = std::string(value);
             break;
+        case kOptionPrefer: {
+            const std::string prefer = toLower(value);
+            if (prefer == "fps") {
+                config.preferResolution = false;
+            } else if (prefer == "resolution") {
+                config.preferResolution = true;
+            } else {
+                return makeError("--prefer must be 'fps' or 'resolution', got '" +
+                                 std::string(value) + "'");
+            }
+            break;
+        }
+        case kOptionListModes:
+            config.listModes = true;
+            break;
         case 'h':
             result.action = CliResult::Action::Help;
             return result;
@@ -250,6 +269,9 @@ std::string usageText(std::string_view programName) {
         << "      --extra-render-delay MS  test aid: sleep MS after each frame to simulate a\n"
         << "                       slow consumer; frames get dropped, latency must not grow\n"
         << "      --stats-csv PATH write per-frame timings to a CSV file\n"
+        << "      --prefer P       what to keep when the exact mode is unavailable:\n"
+        << "                       fps (default) or resolution\n"
+        << "      --list-modes     print the modes the camera offers and exit\n"
         << "  -h, --help           show this help and exit\n"
         << "      --version        show the version and exit\n"
         << "\n"

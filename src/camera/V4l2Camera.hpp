@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera/CameraSource.hpp"
+#include "camera/ModeSelector.hpp"
 #include "util/UniqueFd.hpp"
 
 #include <cstddef>
@@ -13,10 +14,16 @@ namespace camview {
 // Captures frames from a V4L2 device (USB/UVC cameras) using memory-mapped streaming I/O.
 class V4l2Camera final : public CameraSource {
 public:
-    // `requested` is a wish: the driver may adjust size, format or fps; mode() reports the result.
+    // `requested` is a wish: the closest mode the camera offers is selected (see ModeSelector)
+    // and the driver may still adjust it; mode() reports the result.
     // Throws std::invalid_argument for a mode that cannot be requested from a camera.
-    V4l2Camera(std::string devicePath, CameraMode requested);
+    V4l2Camera(std::string devicePath, CameraMode requested,
+               ModePriority priority = ModePriority::FrameRate);
     ~V4l2Camera() override;
+
+    // Every capture mode the device offers in formats camview supports, without streaming.
+    // Throws CameraError if the device cannot be opened or is not a capture device.
+    [[nodiscard]] static std::vector<CameraMode> listModes(const std::string& devicePath);
 
     void open() override;
     void close() noexcept override;
@@ -37,6 +44,7 @@ private:
     };
 
     void queryCapabilities();
+    void selectTargetMode();
     void negotiateFormat();
     void negotiateFrameRate();
     void startStreaming();
@@ -45,7 +53,9 @@ private:
 
     std::string devicePath_;
     CameraMode requested_;
-    CameraMode mode_{};
+    ModePriority priority_;
+    CameraMode target_{}; // Mode picked from the camera's own list; what the driver is asked for.
+    CameraMode mode_{};   // Mode the driver actually set.
     UniqueFd fd_;
 
     std::string driverName_;
@@ -59,9 +69,9 @@ private:
     bool streaming_{false};
     bool warnedAboutTimestamps_{false};
 
-    std::uint64_t staleFramesSkipped_{0};   // Older frames replaced by a newer one in the queue.
-    std::uint64_t errorFlagFrames_{0}; // Frames flagged with V4L2_BUF_FLAG_ERROR by the driver.
-    std::uint64_t truncatedFrames_{0}; // Frames with fewer (or more) bytes than a full image.
+    std::uint64_t staleFramesSkipped_{0}; // Older frames replaced by a newer one in the queue.
+    std::uint64_t errorFlagFrames_{0};    // Frames flagged with V4L2_BUF_FLAG_ERROR by the driver.
+    std::uint64_t truncatedFrames_{0};    // Frames with fewer (or more) bytes than a full image.
 };
 
 } // namespace camview
