@@ -46,7 +46,8 @@ private:
     // Statistic only, so relaxed ordering is enough. 32-bit on purpose: on 32-bit ARM (ARMv6
     // target) 64-bit atomics go through libatomic and a lock; 32-bit ones are always lock-free.
     std::atomic<std::uint32_t> capturedFrames_{0};
-    std::atomic<bool> cameraLost_{false};
+    std::atomic<bool> cameraConnected_{false}; // false while the capture thread reconnects.
+    std::atomic<bool> captureFailed_{false};   // Unexpected error: the capture thread gave up.
 
     // Last member on purpose: destroyed first, so the thread is stopped and joined before the
     // camera and the slot it uses go away, even when run() exits with an exception.

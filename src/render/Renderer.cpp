@@ -123,6 +123,15 @@ void Renderer::render(const Frame& frame, const std::vector<std::string>& overla
     SDL_RenderPresent(renderer_.get());
 }
 
+void Renderer::renderMessage(const std::vector<std::string>& lines) {
+    static_cast<void>(SDL_SetRenderDrawColor(renderer_.get(), 0, 0, 0, 255));
+    if (SDL_RenderClear(renderer_.get()) != 0) {
+        throwSdlError("SDL_RenderClear");
+    }
+    drawOverlay(lines);
+    SDL_RenderPresent(renderer_.get());
+}
+
 void Renderer::ensureTexture(const Frame& frame) {
     if (texture_ && frame.format == textureFormat_ && frame.width == textureWidth_ &&
         frame.height == textureHeight_) {
@@ -202,7 +211,7 @@ void Renderer::drawOverlay(const std::vector<std::string>& lines) {
     }
 
     // Coordinates are in video pixels (logical size), so the overlay scales with the window.
-    const int scale = std::max(1, textureHeight_ / 240);
+    const int scale = std::max(2, textureHeight_ / 240);
     const int padding = 2 * scale;
     const int lineHeight = overlay::kLineAdvance * scale;
 

@@ -8,9 +8,11 @@
 #include "util/Clock.hpp"
 #include "util/Log.hpp"
 
+#include <condition_variable>
 #include <csignal>
 #include <cstdio>
 #include <exception>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,6 +27,9 @@ constexpr auto kTakeTimeout = std::chrono::milliseconds(100);
 
 // Without a single valid frame for this long, tell the user instead of staying silent.
 constexpr auto kStallThreshold = std::chrono::seconds(2);
+
+// How often to try reopening a camera that has disappeared.
+constexpr auto kReconnectInterval = std::chrono::seconds(1);
 
 static_assert(std::atomic<std::uint32_t>::is_always_lock_free,
               "the frame counter must be lock-free on every target");
@@ -65,6 +70,10 @@ std::vector<std::string> makeOverlayLines(double captureFps, const StatsSummary&
     return lines;
 }
 
+const std::vector<std::string> kStartingLines{"STARTING"};
+const std::vector<std::string> kNoSignalLines{"NO SIGNAL", "RECONNECTING"};
+const std::vector<std::string> kNoFramesLines{"NO FRAMES"};
+
 } // namespace
 
 App::App(Config config) : config_(std::move(config)) {}
@@ -76,6 +85,8 @@ int App::run() {
     // driver does not fill up with stale frames while SDL initialises.
     if (config_.display) {
         renderer_.emplace("camview", config_.width, config_.height);
+        // Wayland shows a window only once something has been drawn into it.
+        renderer_->renderMessage(kStartingLines);
     } else {
         std::signal(SIGINT, handleStopSignal);
         std::signal(SIGTERM, handleStopSignal);
@@ -88,10 +99,13 @@ int App::run() {
         log::info("Writing per-frame timings to ", config_.statsCsvPath);
     }
 
+    // Fail fast at start-up: a camera that is missing right away most likely means a wrong
+    // --device, and a clear error is more useful than waiting forever. Once streaming has
+    // started, a lost camera is treated as temporary and reopened by the capture thread.
     source_ = makeSource(config_);
     source_->open();
-    const CameraMode mode = source_->mode();
-    log::info("Source: ", source_->description(), ", mode ", toString(mode));
+    cameraConnected_.store(true);
+    log::info("Source: ", source_->description(), ", mode ", toString(source_->mode()));
 
     // From here on only the capture thread touches source_, until it is joined below.
     captureThread_ = std::jthread([this](std::stop_token token) { captureLoop(token); });
@@ -104,21 +118,36 @@ int App::run() {
     std::uint32_t capturedAtWindowStart = capturedFrames_.load(std::memory_order_relaxed);
     TimePoint lastFrameTime = Clock::now();
     bool stallReported = false;
+    bool wasConnected = true;
     int exitCode = 0;
     const auto extraDelay = std::chrono::milliseconds(config_.extraRenderDelayMs);
 
     while (!quitRequested()) {
+        const bool connected = cameraConnected_.load();
+        if (connected && !wasConnected) {
+            // The camera has just come back: measure stalls and statistics from now on, not
+            // from the last frame before the outage.
+            lastFrameTime = Clock::now();
+            stats = PipelineStats{};
+            capturedAtWindowStart = capturedFrames_.load(std::memory_order_relaxed);
+            stallReported = false;
+        }
+        wasConnected = connected;
+
         if (!slot_.take(received, kTakeTimeout)) {
-            if (cameraLost_.load()) {
-                log::error("Camera disconnected");
+            if (captureFailed_.load()) {
+                log::error("Capture stopped after an unexpected error");
                 exitCode = 1;
                 break;
             }
             const Duration sinceLastFrame = Clock::now() - lastFrameTime;
-            if (!stallReported && sinceLastFrame > kStallThreshold) {
+            if (connected && !stallReported && sinceLastFrame > kStallThreshold) {
                 log::warning("No valid frames for ", toSeconds(sinceLastFrame),
                              " s: the camera stalled or every frame is being rejected");
                 stallReported = true;
+            }
+            if (renderer_ && (!connected || sinceLastFrame > kStallThreshold)) {
+                renderer_->renderMessage(connected ? kNoFramesLines : kNoSignalLines);
             }
             continue;
         }
@@ -172,15 +201,17 @@ int App::run() {
 
             log::info("Capture ", captureFps, " fps, display ", summary->displayFps,
                       " fps | age avg ", summary->avgTotalMs, " max ", summary->maxTotalMs,
-                      " ms = transfer ", summary->avgTransferMs, " + queue ", summary->avgQueueMs,
-                      " + decode ", summary->avgDecodeMs, " + render ", summary->avgRenderMs,
-                      " | dropped ", dropped);
+                      " ms = transfer ", summary->avgTransferMs, " + queue ",
+                      summary->avgQueueMs, " + decode ", summary->avgDecodeMs, " + render ",
+                      summary->avgRenderMs, " | dropped ", dropped);
             overlayLines = makeOverlayLines(captureFps, *summary, dropped);
         }
     }
 
+    const TimePoint stopStart = Clock::now();
     captureThread_.request_stop();
     captureThread_.join();
+    log::info("Capture thread stopped in ", toMilliseconds(Clock::now() - stopStart), " ms");
     log::info("Stopped: ", slot_.dropped(), " frames dropped in favour of newer ones, ",
               decoder.corruptFrames(), " corrupt MJPEG frames");
     source_->close();
@@ -190,32 +221,65 @@ int App::run() {
 void App::captureLoop(const std::stop_token& stopToken) {
     try {
         Frame frame;
+        TimePoint lostAt{};
+        int failedAttempts = 0;
+        std::string lastError;
+        std::mutex waitMutex;
+        std::condition_variable_any waitCondition;
+
         while (!stopToken.stop_requested()) {
+            if (!source_->isOpen()) {
+                try {
+                    source_->open();
+                    cameraConnected_.store(true);
+                    log::info("Camera reconnected after ", toSeconds(Clock::now() - lostAt),
+                              " s (", failedAttempts + 1, " attempts)");
+                    failedAttempts = 0;
+                    lastError.clear();
+                } catch (const CameraError& e) {
+                    // Log only when the reason changes: one line per phase of the outage
+                    // (device gone, device busy while re-initialising...), not one per second.
+                    if (lastError != e.what()) {
+                        log::warning("Reopening failed: ", e.what(), "; retrying every second");
+                        lastError = e.what();
+                    }
+                    ++failedAttempts;
+                    // Sleeps for the retry interval but wakes up at once on a stop request.
+                    std::unique_lock lock(waitMutex);
+                    static_cast<void>(waitCondition.wait_for(lock, stopToken, kReconnectInterval,
+                                                             [] { return false; }));
+                }
+                continue;
+            }
+
             const CaptureStatus status = source_->capture(frame, kCaptureTimeout);
             if (status == CaptureStatus::Ok) {
                 capturedFrames_.fetch_add(1, std::memory_order_relaxed);
                 slot_.publish(frame);
             } else if (status == CaptureStatus::Disconnected) {
-                break;
+                log::warning("Camera lost; trying to reconnect");
+                cameraConnected_.store(false);
+                source_->close();
+                lostAt = Clock::now();
+                failedAttempts = 0;
+                lastError.clear();
             }
-        }
-        if (stopToken.stop_requested()) {
-            return;
         }
     } catch (const std::exception& e) {
         // An exception escaping a thread function would call std::terminate.
         log::error("Capture thread failed: ", e.what());
+        captureFailed_.store(true);
+        slot_.close(); // Wakes the main thread immediately instead of after a timeout.
     }
-    cameraLost_.store(true);
-    slot_.close(); // Wakes the main thread immediately instead of after a timeout.
 }
 
 bool App::quitRequested() {
     // With a window, SDL turns Esc, q, closing the window and Ctrl+C into quit events.
-    if (renderer_) {
-        return renderer_->pollQuitRequested();
+    const bool quit = renderer_ ? renderer_->pollQuitRequested() : gStopRequested != 0;
+    if (quit) {
+        log::info("Quit requested");
     }
-    return gStopRequested != 0;
+    return quit;
 }
 
 } // namespace camview

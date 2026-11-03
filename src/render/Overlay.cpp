@@ -35,6 +35,7 @@ const Glyph* glyphFor(char c) {
     static constexpr Glyph kP{0b11110, 0b10001, 0b10001, 0b11110, 0b10000, 0b10000, 0b10000};
     static constexpr Glyph kR{0b11110, 0b10001, 0b10001, 0b11110, 0b10100, 0b10010, 0b10001};
     static constexpr Glyph kS{0b01111, 0b10000, 0b10000, 0b01110, 0b00001, 0b00001, 0b11110};
+    static constexpr Glyph kT{0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100};
     static constexpr Glyph kX{0b10001, 0b10001, 0b01010, 0b00100, 0b01010, 0b10001, 0b10001};
     static constexpr Glyph kDot{0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b01100, 0b01100};
     static constexpr Glyph kColon{0b00000, 0b01100, 0b01100, 0b00000, 0b01100, 0b01100, 0b00000};
@@ -65,6 +66,7 @@ const Glyph* glyphFor(char c) {
     case 'P': return &kP;
     case 'R': return &kR;
     case 'S': return &kS;
+    case 'T': return &kT;
     case 'X': return &kX;
     case '.': return &kDot;
     case ':': return &kColon;

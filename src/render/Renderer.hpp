@@ -41,6 +41,8 @@ public:
     // Uploads the frame to the GPU, draws `overlayLines` on top and presents the result.
     // Throws RenderError on SDL failures or when the frame's format cannot be displayed.
     void render(const Frame& frame, const std::vector<std::string>& overlayLines = {});
+    // Clears the window to black and shows `lines` (e.g. "NO SIGNAL") instead of video.
+    void renderMessage(const std::vector<std::string>& lines);
 
 private:
     // Calls SDL_Init in the constructor and SDL_Quit in the destructor.
