@@ -63,7 +63,7 @@ XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 SDL_VIDEODRIVER=wayland
 **What I chose and why**
 
 - **V4L2 directly instead of OpenCV.** It shows what happens with the frames: each frame carries the driver's timestamp, so the program can measure how old a frame is when it reaches the screen. It also gives the camera's list of modes and reports when the camera is unplugged.
-- **MJPEG, decoded with libjpeg-turbo, shown with SDL2.** The decoder outputs YUV and SDL turns it into colours on the GPU, so the CPU only decodes. Uncompressed YUYV on this camera is limited to 640×480 and on the Pi 2 often arrived damaged, so MJPEG is the default.
+- **MJPEG, decoded with libjpeg-turbo, shown with SDL2.** The decoder outputs YUV and SDL turns it into colours on the GPU, so the CPU only decodes. Uncompressed YUYV on this camera is limited to 640×480 and on the Pi 2 often arrived damaged when the memory was busy, so MJPEG is the default.
 - **Two threads and a mailbox for one frame, not a queue.** With a queue a slow display would show older and older frames. The mailbox keeps only the newest frame and the older one is dropped before decoding, so the delay stays bounded.
 - **Frame rate before resolution** when the camera has no exact match. In my measurements the transfer took one frame interval, so more frames per second means fresher frames — what matters most for drone video.
 - **No camera at start: error. Camera lost while running: reconnect.** At start the usual cause is a wrong `--device`; while running, a loose cable. A camera that stays connected but sends nothing for 3 seconds is reopened the same way.
@@ -71,16 +71,13 @@ XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 SDL_VIDEODRIVER=wayland
 **Bottlenecks (measured on a Raspberry Pi 2)**
 
 - **The camera and USB transfer:** about 50 ms at 20 fps, roughly three quarters of the total 65 ms at 640×480. The code cannot speed this up; a camera with a higher frame rate can.
-- **MJPEG decoding on the CPU:** 12 ms at 640×480, 29 ms at 1280×720. Comparing with GStreamer I found that my colour conversion did a division for every pixel, and on 32-bit Raspberry Pi OS division is slow (the processor target has no division instruction). After removing it decoding became 43% faster and CPU usage matched GStreamer.
-- **Damaged uncompressed frames under load:** they appeared when the memory was busy, not when the CPU was busy, so the likely cause is the USB controller sharing the memory bus with the CPU and GPU. MJPEG suffered much less.
-- **CPU power saving:** with the default `ondemand` setting the CPU slows down between frames and decoding took up to 1.5× longer.
+- **MJPEG decoding on the CPU:** 12 ms at 640×480, 29 ms at 1280×720. A comparison with GStreamer showed that my code used much more CPU; the cause was a division for every pixel, which is slow on this processor. After the fix decoding became 43% faster and CPU usage matched GStreamer.
+- **CPU power saving:** with the default `ondemand` setting decoding took up to 1.5× longer than with `performance`.
 
 **What I would improve**
 
-- Use the Pi's hardware JPEG decoder instead of the CPU.
-- Measure the full delay "from lens to screen" by filming the screen together with a clock; the program measures only from the moment the frame reaches the computer.
+- Decode JPEG in hardware, on boards that have a decoder, instead of on the CPU.
+- Measure the full delay from lens to screen by filming a stopwatch together with its image on the screen; the program does not see the time spent inside the camera and in the display.
 - Switch to a smaller camera mode automatically when decoding cannot keep up.
-- Full-screen output without a desktop, to remove one more layer between the frame and the screen.
-- For the drone: a systemd service with automatic restart, a stable device name from a udev rule, and waiting for the camera at start instead of exiting.
-- Decoder tests with damaged JPEG files, longer runs and repeated unplug tests with measured reconnect times.
-- Automatic build and tests on every commit (CI).
+- For the drone: start automatically, restart after a failure and wait for the camera at start instead of exiting.
+- Longer runs, repeated unplug tests with measured reconnect times, and tests with damaged JPEG files.
