@@ -14,9 +14,9 @@ namespace camview {
 //
 // Three Frame buffers circulate: the producer's, the consumer's and the one in the slot.
 // publish() and take() just swap buffers under a mutex (O(1), no copying, no allocation), so
-// after warm-up the pipeline allocates nothing. Publishing over an unread frame replaces it:
-// the older frame is dropped rather than queued, because a late frame is worth less than a
-// fresh one.
+// after warm-up the frame buffers are reused instead of reallocated. Publishing over an unread
+// frame replaces it: the older frame is dropped rather than queued, because a late frame is
+// worth less than a fresh one.
 class LatestFrameSlot {
 public:
     // Producer side. Swaps `frame` into the slot; `frame` gets back a spare buffer to fill next.

@@ -30,6 +30,9 @@ constexpr auto kStallThreshold = std::chrono::seconds(2);
 // How often to try reopening a camera that has disappeared.
 constexpr auto kReconnectInterval = std::chrono::seconds(1);
 
+// A camera that stays open but sends nothing for this long is treated as lost and reopened.
+constexpr auto kCaptureWatchdog = std::chrono::seconds(3);
+
 static_assert(std::atomic<std::uint32_t>::is_always_lock_free,
               "the frame counter must be lock-free on every target");
 
@@ -219,6 +222,7 @@ void App::captureLoop(const std::stop_token& stopToken) {
     try {
         Frame frame;
         TimePoint lostAt{};
+        TimePoint lastFrameAt = Clock::now();
         int failedAttempts = 0;
         std::string lastError;
         std::mutex waitMutex;
@@ -229,6 +233,7 @@ void App::captureLoop(const std::stop_token& stopToken) {
                 try {
                     source_->open();
                     cameraConnected_.store(true);
+                    lastFrameAt = Clock::now();
                     log::info("Camera reconnected after ", toSeconds(Clock::now() - lostAt), " s (",
                               failedAttempts + 1, " attempts)");
                     failedAttempts = 0;
@@ -251,15 +256,26 @@ void App::captureLoop(const std::stop_token& stopToken) {
 
             const CaptureStatus status = source_->capture(frame, kCaptureTimeout);
             if (status == CaptureStatus::Ok) {
+                lastFrameAt = Clock::now();
                 capturedFrames_.fetch_add(1, std::memory_order_relaxed);
                 slot_.publish(frame);
-            } else if (status == CaptureStatus::Disconnected) {
-                log::warning("Camera lost; trying to reconnect");
+                continue;
+            }
+            const bool stalled =
+                status == CaptureStatus::Timeout && Clock::now() - lastFrameAt > kCaptureWatchdog;
+            if (status == CaptureStatus::Disconnected || stalled) {
+                log::warning(stalled ? "Camera stalled; reopening it"
+                                     : "Camera lost; trying to reconnect");
                 cameraConnected_.store(false);
                 source_->close();
                 lostAt = Clock::now();
                 failedAttempts = 0;
                 lastError.clear();
+                // Wait before reopening, so a camera that opens and fails at once cannot make
+                // this loop spin and flood the log.
+                std::unique_lock lock(waitMutex);
+                static_cast<void>(waitCondition.wait_for(lock, stopToken, kReconnectInterval,
+                                                         [] { return false; }));
             }
         }
     } catch (const std::exception& e) {

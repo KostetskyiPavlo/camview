@@ -106,7 +106,9 @@ bool MjpegDecoder::decode(const Frame& jpeg, Frame& i420) {
     std::uint8_t* planeU = planeY + layout.lumaBytes;
     std::uint8_t* planeV = planeU + layout.chromaBytes;
 
-    // A TJERR_WARNING means the data had minor damage but an image was still produced.
+    // A TJERR_WARNING means the data was damaged (for example a truncated frame) but an image
+    // was still produced; its damaged part may be grey. Such a frame is shown anyway: a fresh
+    // frame with a defect is more useful than repeating an older one.
     const auto decodedOk = [handle](int result) {
         return result == 0 || tjGetErrorCode(handle) == TJERR_WARNING;
     };

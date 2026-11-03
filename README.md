@@ -12,10 +12,10 @@ Measured on a Raspberry Pi 2 as the worst case: 1280×720 at the camera's full 2
 
 | Level | What is done |
 | --- | --- |
-| 0 | Camera → window → quit with Esc or q. Resolution, pixel format and measured FPS in the log. Stable over a 16-minute run |
+| 0 | Camera → window → quit with Esc or q. Resolution, pixel format and measured FPS in the log. Ran for 16 minutes without errors |
 | 1 | `--device`, `--width`, `--height`, `--fps` with validation (invalid input → message and exit code 2). Measured FPS in the console and the overlay |
 | 2 | Separate capture and render threads; only the newest frame is kept, older ones are dropped, so latency does not grow. Overlay with FPS, frame age and dropped frames |
-| 3 | Closest camera mode is chosen automatically. Clear errors when the camera cannot be opened. "NO SIGNAL" and automatic reconnect when it disappears. Code split into `CameraSource`, `Frame`, `Renderer`, `App` |
+| 3 | Closest camera mode is chosen automatically. Clear errors when the camera cannot be opened. "NO SIGNAL" and automatic reconnect when it is unplugged or stops sending frames. Code split into `CameraSource`, `Frame`, `Renderer`, `App` |
 
 ## Dependencies
 
@@ -66,7 +66,7 @@ XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 SDL_VIDEODRIVER=wayland
 - **MJPEG, decoded with libjpeg-turbo, shown with SDL2.** The decoder outputs YUV and SDL turns it into colours on the GPU, so the CPU only decodes. Uncompressed YUYV on this camera is limited to 640×480 and on the Pi 2 often arrived damaged, so MJPEG is the default.
 - **Two threads and a mailbox for one frame, not a queue.** With a queue a slow display would show older and older frames. The mailbox keeps only the newest frame and the older one is dropped before decoding, so the delay stays bounded.
 - **Frame rate before resolution** when the camera has no exact match. In my measurements the transfer took one frame interval, so more frames per second means fresher frames — what matters most for drone video.
-- **No camera at start: error. Camera lost while running: reconnect.** At start the usual cause is a wrong `--device`; while running, a loose cable.
+- **No camera at start: error. Camera lost while running: reconnect.** At start the usual cause is a wrong `--device`; while running, a loose cable. A camera that stays connected but sends nothing for 3 seconds is reopened the same way.
 
 **Bottlenecks (measured on a Raspberry Pi 2)**
 
@@ -81,4 +81,6 @@ XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 SDL_VIDEODRIVER=wayland
 - Measure the full delay "from lens to screen" by filming the screen together with a clock; the program measures only from the moment the frame reaches the computer.
 - Switch to a smaller camera mode automatically when decoding cannot keep up.
 - Full-screen output without a desktop, to remove one more layer between the frame and the screen.
+- For the drone: a systemd service with automatic restart, a stable device name from a udev rule, and waiting for the camera at start instead of exiting.
+- Decoder tests with damaged JPEG files, longer runs and repeated unplug tests with measured reconnect times.
 - Automatic build and tests on every commit (CI).
