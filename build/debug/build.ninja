@@ -246,8 +246,29 @@ build tests/CMakeFiles/camview_tests.dir/AdaptationPolicyTest.cpp.o: CXX_COMPILE
   OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
 
+build tests/CMakeFiles/camview_tests.dir/CliParserTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/CliParserTest.cpp || cmake_object_order_depends_target_camview_tests
+  DEP_FILE = tests/CMakeFiles/camview_tests.dir/CliParserTest.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -DGTEST_HAS_PTHREAD=1
+  INCLUDES = -I/home/pav/projects/camview/src
+  OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
+  OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
+
+build tests/CMakeFiles/camview_tests.dir/LatestFrameSlotTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/LatestFrameSlotTest.cpp || cmake_object_order_depends_target_camview_tests
+  DEP_FILE = tests/CMakeFiles/camview_tests.dir/LatestFrameSlotTest.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -DGTEST_HAS_PTHREAD=1
+  INCLUDES = -I/home/pav/projects/camview/src
+  OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
+  OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
+
 build tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/ModeSelectorTest.cpp || cmake_object_order_depends_target_camview_tests
   DEP_FILE = tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -DGTEST_HAS_PTHREAD=1
+  INCLUDES = -I/home/pav/projects/camview/src
+  OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
+  OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
+
+build tests/CMakeFiles/camview_tests.dir/OverlayTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/OverlayTest.cpp || cmake_object_order_depends_target_camview_tests
+  DEP_FILE = tests/CMakeFiles/camview_tests.dir/OverlayTest.cpp.o.d
   FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -DGTEST_HAS_PTHREAD=1
   INCLUDES = -I/home/pav/projects/camview/src
   OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
@@ -261,7 +282,7 @@ build tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o: CXX_COMPILER__c
 #############################################
 # Link the executable tests/camview_tests
 
-build tests/camview_tests: CXX_EXECUTABLE_LINKER__camview_tests_Debug tests/CMakeFiles/camview_tests.dir/AdaptationPolicyTest.cpp.o tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o | libcamview_core.a /usr/lib/x86_64-linux-gnu/libgtest_main.a /usr/lib/x86_64-linux-gnu/libSDL2.so /usr/lib/x86_64-linux-gnu/libturbojpeg.so /usr/lib/x86_64-linux-gnu/libgtest.a || libcamview_core.a
+build tests/camview_tests: CXX_EXECUTABLE_LINKER__camview_tests_Debug tests/CMakeFiles/camview_tests.dir/AdaptationPolicyTest.cpp.o tests/CMakeFiles/camview_tests.dir/CliParserTest.cpp.o tests/CMakeFiles/camview_tests.dir/LatestFrameSlotTest.cpp.o tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o tests/CMakeFiles/camview_tests.dir/OverlayTest.cpp.o | libcamview_core.a /usr/lib/x86_64-linux-gnu/libgtest_main.a /usr/lib/x86_64-linux-gnu/libSDL2.so /usr/lib/x86_64-linux-gnu/libturbojpeg.so /usr/lib/x86_64-linux-gnu/libgtest.a || libcamview_core.a
   FLAGS = -g
   LINK_LIBRARIES = libcamview_core.a  /usr/lib/x86_64-linux-gnu/libgtest_main.a  /usr/lib/x86_64-linux-gnu/libSDL2.so  /usr/lib/x86_64-linux-gnu/libturbojpeg.so  /usr/lib/x86_64-linux-gnu/libgtest.a
   OBJECT_DIR = tests/CMakeFiles/camview_tests.dir

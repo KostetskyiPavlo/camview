@@ -85,8 +85,32 @@
 },
 {
   "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1 -o tests/CMakeFiles/camview_tests.dir/AdaptationPolicyTest.cpp.o -c /home/pav/projects/camview/tests/AdaptationPolicyTest.cpp",
+  "file": "/home/pav/projects/camview/tests/AdaptationPolicyTest.cpp",
+  "output": "tests/CMakeFiles/camview_tests.dir/AdaptationPolicyTest.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1 -o tests/CMakeFiles/camview_tests.dir/CliParserTest.cpp.o -c /home/pav/projects/camview/tests/CliParserTest.cpp",
+  "file": "/home/pav/projects/camview/tests/CliParserTest.cpp",
+  "output": "tests/CMakeFiles/camview_tests.dir/CliParserTest.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1 -o tests/CMakeFiles/camview_tests.dir/LatestFrameSlotTest.cpp.o -c /home/pav/projects/camview/tests/LatestFrameSlotTest.cpp",
+  "file": "/home/pav/projects/camview/tests/LatestFrameSlotTest.cpp",
+  "output": "tests/CMakeFiles/camview_tests.dir/LatestFrameSlotTest.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
   "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1 -o tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o -c /home/pav/projects/camview/tests/ModeSelectorTest.cpp",
   "file": "/home/pav/projects/camview/tests/ModeSelectorTest.cpp",
   "output": "tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o"
+},
+{
+  "directory": "/home/pav/projects/camview/build/asan",
+  "command": "/usr/bin/c++ -I/home/pav/projects/camview/src -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1 -o tests/CMakeFiles/camview_tests.dir/OverlayTest.cpp.o -c /home/pav/projects/camview/tests/OverlayTest.cpp",
+  "file": "/home/pav/projects/camview/tests/OverlayTest.cpp",
+  "output": "tests/CMakeFiles/camview_tests.dir/OverlayTest.cpp.o"
 }
 ]

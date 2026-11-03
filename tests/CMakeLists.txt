@@ -2,7 +2,10 @@ find_package(GTest REQUIRED)
 
 add_executable(camview_tests
     AdaptationPolicyTest.cpp
-    ModeSelectorTest.cpp)
+    CliParserTest.cpp
+    LatestFrameSlotTest.cpp
+    ModeSelectorTest.cpp
+    OverlayTest.cpp)
 
 target_link_libraries(camview_tests PRIVATE camview_core camview_options GTest::gtest_main)
 
