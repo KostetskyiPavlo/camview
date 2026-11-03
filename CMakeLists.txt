@@ -87,6 +87,7 @@ add_library(camview_core STATIC
     src/render/Renderer.cpp
     src/stats/CsvLogger.cpp
     src/stats/PipelineStats.cpp
+    src/util/SystemInfo.cpp
     src/util/Log.cpp)
 
 target_include_directories(camview_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

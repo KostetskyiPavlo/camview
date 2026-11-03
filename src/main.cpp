@@ -2,6 +2,7 @@
 #include "app/CliParser.hpp"
 #include "camera/V4l2Camera.hpp"
 #include "util/Log.hpp"
+#include "util/SystemInfo.hpp"
 
 #include <cstdio>
 #include <exception>
@@ -34,6 +35,7 @@ int main(int argc, char** argv) {
             return 0;
         }
         camview::log::info("camview ", CAMVIEW_VERSION);
+        camview::logSystemInfo();
         camview::App app(cli.config);
         return app.run();
     } catch (const std::exception& e) {

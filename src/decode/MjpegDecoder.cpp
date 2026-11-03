@@ -30,14 +30,28 @@ const char* subsamplingName(int subsampling) {
     }
 }
 
-// Nearest-neighbour resize of one chroma plane. Chroma planes are small, so this stays cheap.
+// Nearest-neighbour resize of one chroma plane, without a division per pixel: the default
+// 32-bit Raspberry Pi OS target (ARMv6) has no hardware divide, so every '/' becomes a slow
+// library call. 4:2:2 -> 4:2:0, the common case for UVC cameras, keeps the width and becomes
+// a plain row copy.
 void resamplePlane(const std::uint8_t* source, int sourceWidth, int sourceHeight,
                    std::uint8_t* target, int targetWidth, int targetHeight) {
+    // 16.16 fixed-point step through the source row, computed once per plane.
+    const std::uint32_t step = (static_cast<std::uint32_t>(sourceWidth) << 16U) /
+                               static_cast<std::uint32_t>(targetWidth);
+
     for (int y = 0; y < targetHeight; ++y) {
         const std::uint8_t* sourceRow = source + (y * sourceHeight / targetHeight) * sourceWidth;
         std::uint8_t* targetRow = target + y * targetWidth;
+
+        if (sourceWidth == targetWidth) {
+            std::memcpy(targetRow, sourceRow, static_cast<std::size_t>(targetWidth));
+            continue;
+        }
+        std::uint32_t position = 0;
         for (int x = 0; x < targetWidth; ++x) {
-            targetRow[x] = sourceRow[x * sourceWidth / targetWidth];
+            targetRow[x] = sourceRow[position >> 16U];
+            position += step;
         }
     }
 }
