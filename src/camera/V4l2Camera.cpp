@@ -96,6 +96,9 @@ UniqueFd openDevice(const std::string& path) {
 
 std::uint32_t snapToRange(std::uint32_t value, std::uint32_t minimum, std::uint32_t maximum,
                           std::uint32_t step) {
+    if (minimum > maximum) {
+        return minimum; // Buggy driver; std::clamp would be undefined behaviour.
+    }
     const std::uint32_t clamped = std::clamp(value, minimum, maximum);
     if (step <= 1) {
         return clamped;

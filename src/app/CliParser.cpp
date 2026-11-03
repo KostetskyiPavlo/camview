@@ -117,6 +117,21 @@ std::string offendingOption(char* argv[], bool missingValue) {
     return std::string(last.substr(0, last.find('=')));
 }
 
+// One help line: flags in the left column, the description aligned in the right one.
+// Flags too long for the column push the description onto the next line.
+void appendOption(std::ostringstream& out, std::string_view flags, std::string_view description) {
+    constexpr std::size_t kIndent = 2;
+    constexpr std::size_t kDescriptionColumn = 32;
+
+    out << std::string(kIndent, ' ') << flags;
+    if (kIndent + flags.size() + 2 > kDescriptionColumn) { // keep at least two spaces
+        out << '\n' << std::string(kDescriptionColumn, ' ');
+    } else {
+        out << std::string(kDescriptionColumn - kIndent - flags.size(), ' ');
+    }
+    out << description << '\n';
+}
+
 } // namespace
 
 CliResult parseCommandLine(int argc, char* argv[]) {
@@ -255,39 +270,40 @@ CliResult parseCommandLine(int argc, char* argv[]) {
 std::string usageText(std::string_view programName) {
     const Config defaults;
     std::ostringstream out;
+
     out << "Usage: " << programName << " [options]\n"
-        << "\n"
-        << "Live, low-latency preview of a V4L2 (USB/UVC) camera.\n"
-        << "\n"
-        << "Options:\n"
-        << "  -d, --device PATH|N  camera device or index (default " << defaults.device
-        << "; 2 means /dev/video2)\n"
-        << "      --width N        requested width, 16..7680 (default " << defaults.width << ")\n"
-        << "      --height N       requested height, 16..4320 (default " << defaults.height << ")\n"
-        << "      --fps N          requested frame rate, 1..240 (default " << defaults.fps << ")\n"
-        << "      --format F       mjpg or yuyv (default " << toLower(toString(defaults.format))
-        << ")\n"
-        << "      --test-pattern   synthetic source instead of a camera\n"
-        << "      --no-display     capture and decode without a window (benchmarking)\n"
-        << "      --extra-render-delay MS  test aid: sleep MS after each frame to simulate a\n"
-        << "                       slow consumer; frames get dropped, latency must not grow\n"
-        << "      --stats-csv PATH write per-frame timings to a CSV file\n"
-        << "      --prefer P       what to keep when the exact mode is unavailable:\n"
-        << "                       fps (default) or resolution\n"
-        << "      --list-modes     print the modes the camera offers and exit\n"
-        << "      --no-adapt       keep the selected mode even if the hardware cannot keep up\n"
-        << "  -h, --help           show this help and exit\n"
-        << "      --version        show the version and exit\n"
-        << "\n"
-        << "The camera may not support the requested mode exactly; the mode it actually uses is\n"
-        << "logged. Quit with Esc or q in the window, or Ctrl+C.\n"
-        << "\n"
-        << "Exit codes: 0 success, 1 runtime error, 2 invalid command line.\n"
-        << "\n"
-        << "Examples:\n"
-        << "  " << programName << " --device /dev/video0 --width 1280 --height 720 --fps 30\n"
-        << "  " << programName << " --format yuyv\n"
-        << "  " << programName << " --test-pattern\n";
+        << "Low-latency live preview of a USB (UVC) camera.\n\n";
+
+    out << "Camera:\n";
+    appendOption(out, "-d, --device PATH|N",
+                 "device, or index N for /dev/videoN [" + defaults.device + "]");
+    appendOption(out, "    --width N",
+                 "requested width, together with --height [" + std::to_string(defaults.width) +
+                     "]");
+    appendOption(out, "    --height N",
+                 "requested height, together with --width [" + std::to_string(defaults.height) +
+                     "]");
+    appendOption(out, "    --fps N",
+                 "requested frame rate, 1..240 [" + std::to_string(static_cast<int>(defaults.fps)) +
+                     "]");
+    appendOption(out, "    --format mjpg|yuyv", "requested pixel format [mjpg]");
+    appendOption(out, "    --prefer fps|resolution", "what to keep without an exact mode [fps]");
+    appendOption(out, "    --no-adapt", "never step down to a smaller mode");
+    appendOption(out, "    --list-modes", "print the camera's modes and exit");
+    appendOption(out, "    --test-pattern", "synthetic source instead of a camera");
+
+    out << "\nOutput:\n";
+    appendOption(out, "    --no-display", "capture and decode without a window");
+    appendOption(out, "    --stats-csv PATH", "write per-frame timings to a CSV file");
+    appendOption(out, "    --extra-render-delay MS", "simulate a slow display (test aid)");
+
+    out << "\nOther:\n";
+    appendOption(out, "-h, --help", "show this help");
+    appendOption(out, "    --version", "show the version");
+
+    out << "\nWidth, height and frame rate are a request: the closest mode the camera offers\n"
+        << "is used. Quit with Esc or q.\n"
+        << "Exit codes: 0 success, 1 runtime error, 2 invalid command line.\n";
     return out.str();
 }
 

@@ -87,6 +87,14 @@ bool MjpegDecoder::decode(const Frame& jpeg, Frame& i420) {
         return false;
     }
 
+    // The header is untrusted: a corrupted size would make the resize below allocate gigabytes
+    // or, with the 32-bit size_t of armhf, overflow so that the decoder writes past the buffer.
+    // A real camera never changes size mid-stream.
+    if (width != jpeg.width || height != jpeg.height) {
+        reportCorrupt("dimensions");
+        return false;
+    }
+
     if (subsampling != lastSubsampling_) {
         log::info("MJPEG stream: ", width, "x", height, ", chroma ", subsamplingName(subsampling));
         lastSubsampling_ = subsampling;

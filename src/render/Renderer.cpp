@@ -58,6 +58,15 @@ void Renderer::SdlDeleter::operator()(SDL_Texture* texture) const noexcept {
 }
 
 Renderer::Renderer(const std::string& title, int width, int height) {
+    // Without a display (typically over SSH with no DISPLAY/WAYLAND_DISPLAY) SDL may silently
+    // fall back to an invisible driver. A window nobody can see is worse than a clear error.
+    const std::string driver = orUnknown(SDL_GetCurrentVideoDriver());
+    if (driver == "offscreen" || driver == "dummy") {
+        throw RenderError("no display is available (SDL picked the '" + driver +
+                          "' video driver), so the window would be invisible. Run from the "
+                          "desktop session, set WAYLAND_DISPLAY or DISPLAY when connected "
+                          "over SSH, or use --no-display");
+    }
     // Smooth scaling when the window size differs from the video size.
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
