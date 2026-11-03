@@ -28,10 +28,8 @@ constexpr int kOptionTestPattern = 1004;
 constexpr int kOptionNoDisplay = 1005;
 constexpr int kOptionVersion = 1006;
 constexpr int kOptionExtraRenderDelay = 1007;
-constexpr int kOptionStatsCsv = 1008;
 constexpr int kOptionPrefer = 1009;
 constexpr int kOptionListModes = 1010;
-constexpr int kOptionNoAdapt = 1011;
 constexpr int kMaxExtraRenderDelayMs = 1000;
 
 const option kLongOptions[] = {
@@ -43,10 +41,8 @@ const option kLongOptions[] = {
     {"test-pattern", no_argument, nullptr, kOptionTestPattern},
     {"no-display", no_argument, nullptr, kOptionNoDisplay},
     {"extra-render-delay", required_argument, nullptr, kOptionExtraRenderDelay},
-    {"stats-csv", required_argument, nullptr, kOptionStatsCsv},
     {"prefer", required_argument, nullptr, kOptionPrefer},
     {"list-modes", no_argument, nullptr, kOptionListModes},
-    {"no-adapt", no_argument, nullptr, kOptionNoAdapt},
     {"help", no_argument, nullptr, 'h'},
     {"version", no_argument, nullptr, kOptionVersion},
     {nullptr, 0, nullptr, 0},
@@ -217,12 +213,6 @@ CliResult parseCommandLine(int argc, char* argv[]) {
             config.extraRenderDelayMs = *delay;
             break;
         }
-        case kOptionStatsCsv:
-            if (value.empty()) {
-                return makeError("--stats-csv needs a file path");
-            }
-            config.statsCsvPath = std::string(value);
-            break;
         case kOptionPrefer: {
             const std::string prefer = toLower(value);
             if (prefer == "fps") {
@@ -237,9 +227,6 @@ CliResult parseCommandLine(int argc, char* argv[]) {
         }
         case kOptionListModes:
             config.listModes = true;
-            break;
-        case kOptionNoAdapt:
-            config.adapt = false;
             break;
         case 'h':
             result.action = CliResult::Action::Help;
@@ -288,13 +275,11 @@ std::string usageText(std::string_view programName) {
                      "]");
     appendOption(out, "    --format mjpg|yuyv", "requested pixel format [mjpg]");
     appendOption(out, "    --prefer fps|resolution", "what to keep without an exact mode [fps]");
-    appendOption(out, "    --no-adapt", "never step down to a smaller mode");
     appendOption(out, "    --list-modes", "print the camera's modes and exit");
     appendOption(out, "    --test-pattern", "synthetic source instead of a camera");
 
     out << "\nOutput:\n";
     appendOption(out, "    --no-display", "capture and decode without a window");
-    appendOption(out, "    --stats-csv PATH", "write per-frame timings to a CSV file");
     appendOption(out, "    --extra-render-delay MS", "simulate a slow display (test aid)");
 
     out << "\nOther:\n";

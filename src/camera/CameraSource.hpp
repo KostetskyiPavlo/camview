@@ -50,11 +50,6 @@ public:
     // reusing frame.data's capacity.
     [[nodiscard]] virtual CaptureStatus capture(Frame& frame,
                                                 std::chrono::milliseconds timeout) = 0;
-
-    // Switches to the next smaller mode the device offers, keeping the frame rate. Takes effect
-    // on the next open(). Returns false when there is no smaller mode (or the source cannot
-    // change modes at all, which is the default).
-    [[nodiscard]] virtual bool stepDown() { return false; }
 };
 
 } // namespace camview

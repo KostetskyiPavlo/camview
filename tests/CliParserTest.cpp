@@ -33,7 +33,6 @@ TEST(CliParser, UsesDefaultsWithoutArguments) {
     EXPECT_EQ(result.config.width, 1280);
     EXPECT_EQ(result.config.height, 720);
     EXPECT_DOUBLE_EQ(result.config.fps, 60.0);
-    EXPECT_TRUE(result.config.adapt);
     EXPECT_TRUE(result.config.display);
 }
 
@@ -67,12 +66,10 @@ TEST(CliParser, ReadsFormatAndPriorityCaseInsensitively) {
 }
 
 TEST(CliParser, ReadsTheBooleanFlags) {
-    const CliResult result =
-        parse({"--test-pattern", "--no-display", "--no-adapt", "--list-modes"});
+    const CliResult result = parse({"--test-pattern", "--no-display", "--list-modes"});
     ASSERT_EQ(result.action, CliResult::Action::Run);
     EXPECT_TRUE(result.config.testPattern);
     EXPECT_FALSE(result.config.display);
-    EXPECT_FALSE(result.config.adapt);
     EXPECT_TRUE(result.config.listModes);
 }
 

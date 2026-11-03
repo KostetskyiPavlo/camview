@@ -36,8 +36,6 @@ public:
     // when the only available frame was corrupted and had to be skipped.
     [[nodiscard]] CaptureStatus capture(Frame& frame, std::chrono::milliseconds timeout) override;
 
-    [[nodiscard]] bool stepDown() override;
-
 private:
     struct MappedBuffer {
         void* start;
@@ -57,7 +55,6 @@ private:
     ModePriority priority_;
     CameraMode target_{}; // Mode picked from the camera's own list; what the driver is asked for.
     CameraMode mode_{};   // Mode the driver actually set.
-    std::vector<CameraMode> modes_; // Modes the device listed at the last open().
     UniqueFd fd_;
 
     std::string driverName_;

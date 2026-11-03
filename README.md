@@ -65,7 +65,7 @@ XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 SDL_VIDEODRIVER=wayland
 - **V4L2 directly instead of OpenCV.** It shows what happens with the frames: each frame carries the driver's timestamp, so the program can measure how old a frame is when it reaches the screen. It also gives the camera's list of modes and reports when the camera is unplugged.
 - **MJPEG, decoded with libjpeg-turbo, shown with SDL2.** The decoder outputs YUV and SDL turns it into colours on the GPU, so the CPU only decodes. Uncompressed YUYV on this camera is limited to 640×480 and on the Pi 2 often arrived damaged, so MJPEG is the default.
 - **Two threads and a mailbox for one frame, not a queue.** With a queue a slow display would show older and older frames. The mailbox keeps only the newest frame and the older one is dropped before decoding, so the delay stays bounded.
-- **Frame rate before resolution** when the camera has no exact match. In my measurements the transfer took one frame interval, so more frames per second means fresher frames — what matters most for drone video. If decoding still cannot keep up, the program switches to a smaller mode by itself.
+- **Frame rate before resolution** when the camera has no exact match. In my measurements the transfer took one frame interval, so more frames per second means fresher frames — what matters most for drone video.
 - **No camera at start: error. Camera lost while running: reconnect.** At start the usual cause is a wrong `--device`; while running, a loose cable.
 
 **Bottlenecks (measured on a Raspberry Pi 2)**
@@ -79,6 +79,6 @@ XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 SDL_VIDEODRIVER=wayland
 
 - Use the Pi's hardware JPEG decoder instead of the CPU.
 - Measure the full delay "from lens to screen" by filming the screen together with a clock; the program measures only from the moment the frame reaches the computer.
-- Let the user choose what the automatic mode switch prefers: lower delay or more detail.
+- Switch to a smaller camera mode automatically when decoding cannot keep up.
 - Full-screen output without a desktop, to remove one more layer between the frame and the screen.
 - Automatic build and tests on every commit (CI).

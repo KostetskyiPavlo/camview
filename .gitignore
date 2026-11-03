@@ -8,5 +8,5 @@ compile_commands.json
 # Editors
 /.vscode/
 /.idea/
-*.swpbuild/
-.claude/
+*.swp
+/.claude/

@@ -85,7 +85,6 @@ add_library(camview_core STATIC
     src/frame/PixelFormat.cpp
     src/render/Overlay.cpp
     src/render/Renderer.cpp
-    src/stats/CsvLogger.cpp
     src/stats/PipelineStats.cpp
     src/util/SystemInfo.cpp
     src/util/Log.cpp)

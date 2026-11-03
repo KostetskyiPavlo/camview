@@ -50,28 +50,4 @@ std::optional<CameraMode> selectMode(std::span<const CameraMode> available,
         [&](const CameraMode& a, const CameraMode& b) { return keyOf(a) < keyOf(b); });
 }
 
-std::optional<CameraMode> selectLowerMode(std::span<const CameraMode> available,
-                                          const CameraMode& current) {
-    const auto area = [](const CameraMode& mode) {
-        return static_cast<long long>(mode.width) * mode.height;
-    };
-
-    std::optional<CameraMode> best;
-    for (const CameraMode& mode : available) {
-        const bool candidate = mode.format == current.format && area(mode) < area(current) &&
-                               mode.fps >= current.fps - kFpsTolerance;
-        if (!candidate) {
-            continue;
-        }
-        const bool larger = !best || area(mode) > area(*best);
-        const bool sameSizeCloserFps =
-            best && area(mode) == area(*best) &&
-            std::abs(mode.fps - current.fps) < std::abs(best->fps - current.fps);
-        if (larger || sameSizeCloserFps) {
-            best = mode;
-        }
-    }
-    return best;
-}
-
 } // namespace camview

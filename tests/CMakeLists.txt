@@ -1,7 +1,6 @@
 find_package(GTest REQUIRED)
 
 add_executable(camview_tests
-    AdaptationPolicyTest.cpp
     CliParserTest.cpp
     LatestFrameSlotTest.cpp
     ModeSelectorTest.cpp

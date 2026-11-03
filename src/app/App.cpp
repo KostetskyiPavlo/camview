@@ -1,10 +1,8 @@
 #include "app/App.hpp"
 
-#include "app/AdaptationPolicy.hpp"
 #include "camera/TestPatternSource.hpp"
 #include "camera/V4l2Camera.hpp"
 #include "decode/MjpegDecoder.hpp"
-#include "stats/CsvLogger.hpp"
 #include "stats/PipelineStats.hpp"
 #include "util/Clock.hpp"
 #include "util/Log.hpp"
@@ -94,12 +92,6 @@ int App::run() {
         log::info("Display disabled; stop with Ctrl+C");
     }
 
-    std::optional<CsvLogger> csv;
-    if (!config_.statsCsvPath.empty()) {
-        csv.emplace(config_.statsCsvPath);
-        log::info("Writing per-frame timings to ", config_.statsCsvPath);
-    }
-
     // Fail fast at start-up: a camera that is missing right away most likely means a wrong
     // --device, and a clear error is more useful than waiting forever. Once streaming has
     // started, a lost camera is treated as temporary and reopened by the capture thread.
@@ -112,7 +104,6 @@ int App::run() {
 
     MjpegDecoder decoder;
     PipelineStats stats;
-    AdaptationPolicy adaptation;
     Frame received;
     Frame decoded;
     std::vector<std::string> overlayLines;
@@ -132,7 +123,6 @@ int App::run() {
             stats = PipelineStats{};
             capturedAtWindowStart = capturedFrames_.load(std::memory_order_relaxed);
             stallReported = false;
-            adaptation.reset();
         }
         wasConnected = connected;
 
@@ -185,9 +175,6 @@ int App::run() {
             presented - received.captureTime,            // total
         };
         stats.addFrame(timings, presented);
-        if (csv) {
-            csv->write(received.sequence, timings, slot_.dropped());
-        }
 
         if (extraDelay.count() > 0) {
             std::this_thread::sleep_for(extraDelay); // Test aid: simulate a slow consumer.
@@ -207,15 +194,6 @@ int App::run() {
                       " + decode ", summary->avgDecodeMs, " + render ", summary->avgRenderMs,
                       " | dropped ", dropped);
             overlayLines = makeOverlayLines(captureFps, *summary, dropped);
-
-            const double processingMs = summary->avgDecodeMs + summary->avgRenderMs;
-            if (config_.adapt && canAdapt_.load() &&
-                adaptation.update(captureFps, summary->displayFps, processingMs)) {
-                log::warning("Showing ", summary->displayFps, " of ", captureFps,
-                             " fps: decode + render take ", processingMs, " ms of the camera's ",
-                             1000.0 / captureFps, " ms frame interval; requesting a smaller mode");
-                downgradeRequested_.store(true);
-            }
         }
     }
 
@@ -261,29 +239,6 @@ void App::captureLoop(const std::stop_token& stopToken) {
                                                              [] { return false; }));
                 }
                 continue;
-            }
-
-            if (downgradeRequested_.exchange(false)) {
-                const CameraMode before = source_->mode();
-                if (!source_->stepDown()) {
-                    log::info("Already at the smallest mode with this frame rate; "
-                              "cannot adapt further");
-                    canAdapt_.store(false);
-                } else {
-                    try {
-                        source_->close();
-                        source_->open();
-                        log::info("Adapted: ", toString(before), " -> ", toString(source_->mode()));
-                    } catch (const CameraError& e) {
-                        // Hand over to the reconnect logic above.
-                        log::warning("Reopening in a smaller mode failed: ", e.what());
-                        cameraConnected_.store(false);
-                        lostAt = Clock::now();
-                        failedAttempts = 0;
-                        lastError.clear();
-                    }
-                    continue;
-                }
             }
 
             const CaptureStatus status = source_->capture(frame, kCaptureTimeout);
