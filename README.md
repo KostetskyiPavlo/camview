@@ -25,7 +25,7 @@ Ubuntu 22.04+, Debian 12+ or Raspberry Pi OS; GCC 11+ and CMake 3.22+ (tested wi
 sudo apt install build-essential cmake ninja-build pkg-config libsdl2-dev libturbojpeg0-dev libgtest-dev
 ```
 
-GoogleTest is only needed for tests. The user must be in the `video` group to access the camera.
+GoogleTest is only needed for tests; without it, configure with `-DCAMVIEW_BUILD_TESTS=OFF`. The user must be in the `video` group to access the camera.
 
 ## Build
 

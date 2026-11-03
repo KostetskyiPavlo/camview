@@ -114,6 +114,20 @@ int App::run() {
     int exitCode = 0;
     const auto extraDelay = std::chrono::milliseconds(config_.extraRenderDelayMs);
 
+    // Nothing shown for a while, whether no frame arrived or every frame was corrupt: say so
+    // instead of silently freezing on the last good picture.
+    const auto reportMissingFrames = [&](bool connected) {
+        const Duration sinceLastFrame = Clock::now() - lastFrameTime;
+        if (connected && !stallReported && sinceLastFrame > kStallThreshold) {
+            log::warning("No valid frames for ", toSeconds(sinceLastFrame),
+                         " s: the camera stalled or every frame is being rejected");
+            stallReported = true;
+        }
+        if (renderer_ && (!connected || sinceLastFrame > kStallThreshold)) {
+            renderer_->renderMessage(connected ? kNoFramesLines : kNoSignalLines);
+        }
+    };
+
     while (!quitRequested()) {
         const bool connected = cameraConnected_.load();
         if (connected && !wasConnected) {
@@ -132,34 +146,28 @@ int App::run() {
                 exitCode = 1;
                 break;
             }
-            const Duration sinceLastFrame = Clock::now() - lastFrameTime;
-            if (connected && !stallReported && sinceLastFrame > kStallThreshold) {
-                log::warning("No valid frames for ", toSeconds(sinceLastFrame),
-                             " s: the camera stalled or every frame is being rejected");
-                stallReported = true;
-            }
-            if (renderer_ && (!connected || sinceLastFrame > kStallThreshold)) {
-                renderer_->renderMessage(connected ? kNoFramesLines : kNoSignalLines);
-            }
+            reportMissingFrames(connected);
             continue;
         }
 
         const TimePoint taken = Clock::now();
-        if (stallReported) {
-            log::info("Frames are flowing again after ", toSeconds(taken - lastFrameTime), " s");
-            stallReported = false;
-        }
-        lastFrameTime = taken;
-
         const Frame* frameToShow = &received;
         Duration decodeTime{};
         if (received.format == PixelFormat::Mjpeg) {
             if (!decoder.decode(received, decoded)) {
+                reportMissingFrames(connected);
                 continue;
             }
             decodeTime = Clock::now() - taken;
             frameToShow = &decoded;
         }
+
+        // Only a frame that can be shown counts as "frames are flowing".
+        if (stallReported) {
+            log::info("Frames are flowing again after ", toSeconds(taken - lastFrameTime), " s");
+            stallReported = false;
+        }
+        lastFrameTime = taken;
 
         const TimePoint renderStart = Clock::now();
         if (renderer_) {

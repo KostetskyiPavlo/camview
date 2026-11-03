@@ -57,6 +57,8 @@ std::string errorHint(int error) {
     case ENODEV:
     case ENXIO:
         return " (device is not present; was it unplugged?)";
+    case ENOSPC:
+        return " (not enough USB bandwidth; try MJPEG, a smaller mode or another USB port)";
     default:
         return "";
     }

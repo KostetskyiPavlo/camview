@@ -149,6 +149,11 @@ void Renderer::ensureTexture(const Frame& frame) {
     }
 
     const Uint32 sdlFormat = toSdlPixelFormat(frame.format);
+    // JPEG (JFIF) uses the full 0..255 range; SDL assumes video range (16..235) by default,
+    // which would crush shadows and highlights. Camera YUYV keeps SDL's automatic choice.
+    // The mode is read when the texture is created.
+    SDL_SetYUVConversionMode(frame.format == PixelFormat::I420 ? SDL_YUV_CONVERSION_JPEG
+                                                               : SDL_YUV_CONVERSION_AUTOMATIC);
     texture_.reset(SDL_CreateTexture(renderer_.get(), sdlFormat, SDL_TEXTUREACCESS_STREAMING,
                                      frame.width, frame.height));
     if (!texture_) {
