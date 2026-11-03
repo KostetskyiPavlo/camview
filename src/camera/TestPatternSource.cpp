@@ -1,5 +1,7 @@
 #include "camera/TestPatternSource.hpp"
 
+#include "util/Log.hpp"
+
 #include <array>
 #include <cstdlib>
 #include <stdexcept>
@@ -53,6 +55,7 @@ void TestPatternSource::open() {
     open_ = true;
     sequence_ = 0;
     nextFrameTime_ = Clock::now();
+    log::info("Opened ", description(), ", mode ", toString(mode_));
 }
 
 void TestPatternSource::close() noexcept {

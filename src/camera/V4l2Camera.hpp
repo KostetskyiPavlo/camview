@@ -34,8 +34,7 @@ public:
     // Returns the newest available frame. Older frames waiting in the driver queue are handed
     // straight back to the driver: showing them would only add latency. Returns Timeout also
     // when the only available frame was corrupted and had to be skipped.
-    [[nodiscard]] CaptureStatus capture(Frame& frame,
-                                        std::chrono::milliseconds timeout) override;
+    [[nodiscard]] CaptureStatus capture(Frame& frame, std::chrono::milliseconds timeout) override;
 
     [[nodiscard]] bool stepDown() override;
 

@@ -42,36 +42,66 @@ const Glyph* glyphFor(char c) {
     static constexpr Glyph kDash{0b00000, 0b00000, 0b00000, 0b11111, 0b00000, 0b00000, 0b00000};
 
     switch (c) {
-    case '0': return &k0;
-    case '1': return &k1;
-    case '2': return &k2;
-    case '3': return &k3;
-    case '4': return &k4;
-    case '5': return &k5;
-    case '6': return &k6;
-    case '7': return &k7;
-    case '8': return &k8;
-    case '9': return &k9;
-    case 'A': return &kA;
-    case 'C': return &kC;
-    case 'D': return &kD;
-    case 'E': return &kE;
-    case 'F': return &kF;
-    case 'G': return &kG;
-    case 'I': return &kI;
-    case 'L': return &kL;
-    case 'M': return &kM;
-    case 'N': return &kN;
-    case 'O': return &kO;
-    case 'P': return &kP;
-    case 'R': return &kR;
-    case 'S': return &kS;
-    case 'T': return &kT;
-    case 'X': return &kX;
-    case '.': return &kDot;
-    case ':': return &kColon;
-    case '-': return &kDash;
-    default: return nullptr;
+    case '0':
+        return &k0;
+    case '1':
+        return &k1;
+    case '2':
+        return &k2;
+    case '3':
+        return &k3;
+    case '4':
+        return &k4;
+    case '5':
+        return &k5;
+    case '6':
+        return &k6;
+    case '7':
+        return &k7;
+    case '8':
+        return &k8;
+    case '9':
+        return &k9;
+    case 'A':
+        return &kA;
+    case 'C':
+        return &kC;
+    case 'D':
+        return &kD;
+    case 'E':
+        return &kE;
+    case 'F':
+        return &kF;
+    case 'G':
+        return &kG;
+    case 'I':
+        return &kI;
+    case 'L':
+        return &kL;
+    case 'M':
+        return &kM;
+    case 'N':
+        return &kN;
+    case 'O':
+        return &kO;
+    case 'P':
+        return &kP;
+    case 'R':
+        return &kR;
+    case 'S':
+        return &kS;
+    case 'T':
+        return &kT;
+    case 'X':
+        return &kX;
+    case '.':
+        return &kDot;
+    case ':':
+        return &kColon;
+    case '-':
+        return &kDash;
+    default:
+        return nullptr;
     }
 }
 

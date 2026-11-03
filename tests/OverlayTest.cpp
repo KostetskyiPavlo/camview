@@ -1,7 +1,6 @@
 #include "render/Overlay.hpp"
 
 #include <gtest/gtest.h>
-
 #include <vector>
 
 namespace camview {

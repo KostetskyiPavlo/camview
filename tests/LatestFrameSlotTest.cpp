@@ -1,9 +1,8 @@
 #include "frame/LatestFrameSlot.hpp"
 
-#include <gtest/gtest.h>
-
 #include <chrono>
 #include <cstdint>
+#include <gtest/gtest.h>
 #include <thread>
 
 namespace camview {

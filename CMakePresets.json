@@ -18,9 +18,10 @@
     {
       "name": "debug",
       "inherits": "base",
-      "displayName": "Debug",
+      "displayName": "Debug (warnings are errors)",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CAMVIEW_WARNINGS_AS_ERRORS": "ON"
       }
     },
     {
@@ -34,19 +35,21 @@
     {
       "name": "asan",
       "inherits": "base",
-      "displayName": "Debug + AddressSanitizer + UBSan",
+      "displayName": "Debug + AddressSanitizer + UBSan (warnings are errors)",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CAMVIEW_SANITIZER": "address,undefined"
+        "CAMVIEW_SANITIZER": "address,undefined",
+        "CAMVIEW_WARNINGS_AS_ERRORS": "ON"
       }
     },
     {
       "name": "tsan",
       "inherits": "base",
-      "displayName": "Debug + ThreadSanitizer (x86_64/arm64 only)",
+      "displayName": "Debug + ThreadSanitizer, x86_64/arm64 only (warnings are errors)",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CAMVIEW_SANITIZER": "thread"
+        "CAMVIEW_SANITIZER": "thread",
+        "CAMVIEW_WARNINGS_AS_ERRORS": "ON"
       }
     }
   ],

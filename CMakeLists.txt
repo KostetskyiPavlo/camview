@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(camview
-    VERSION 0.1.0
+    VERSION 1.0.0
     DESCRIPTION "Low-latency USB camera viewer for Linux (V4L2 + SDL2)"
     LANGUAGES CXX)
 

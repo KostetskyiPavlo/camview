@@ -1,4 +1,5 @@
 #include "decode/MjpegDecoder.hpp"
+
 #include "util/Log.hpp"
 
 #include <turbojpeg.h>
@@ -37,8 +38,8 @@ const char* subsamplingName(int subsampling) {
 void resamplePlane(const std::uint8_t* source, int sourceWidth, int sourceHeight,
                    std::uint8_t* target, int targetWidth, int targetHeight) {
     // 16.16 fixed-point step through the source row, computed once per plane.
-    const std::uint32_t step = (static_cast<std::uint32_t>(sourceWidth) << 16U) /
-                               static_cast<std::uint32_t>(targetWidth);
+    const std::uint32_t step =
+        (static_cast<std::uint32_t>(sourceWidth) << 16U) / static_cast<std::uint32_t>(targetWidth);
 
     for (int y = 0; y < targetHeight; ++y) {
         const std::uint8_t* sourceRow = source + (y * sourceHeight / targetHeight) * sourceWidth;
@@ -87,8 +88,7 @@ bool MjpegDecoder::decode(const Frame& jpeg, Frame& i420) {
     }
 
     if (subsampling != lastSubsampling_) {
-        log::info("MJPEG stream: ", width, "x", height, ", chroma ",
-                  subsamplingName(subsampling));
+        log::info("MJPEG stream: ", width, "x", height, ", chroma ", subsamplingName(subsampling));
         lastSubsampling_ = subsampling;
     }
 
@@ -107,16 +107,16 @@ bool MjpegDecoder::decode(const Frame& jpeg, Frame& i420) {
         // Fast path: the JPEG is already 4:2:0, decode straight into the output planes.
         unsigned char* planes[3] = {planeY, planeU, planeV};
         int strides[3] = {width, layout.chromaWidth, layout.chromaWidth};
-        if (!decodedOk(tjDecompressToYUVPlanes(handle, jpegData, jpegSize, planes, width,
-                                               strides, height, TJFLAG_FASTDCT))) {
+        if (!decodedOk(tjDecompressToYUVPlanes(handle, jpegData, jpegSize, planes, width, strides,
+                                               height, TJFLAG_FASTDCT))) {
             reportCorrupt("decode");
             return false;
         }
     } else if (subsampling == TJSAMP_GRAY) {
         unsigned char* planes[3] = {planeY, nullptr, nullptr};
         int strides[3] = {width, 0, 0};
-        if (!decodedOk(tjDecompressToYUVPlanes(handle, jpegData, jpegSize, planes, width,
-                                               strides, height, TJFLAG_FASTDCT))) {
+        if (!decodedOk(tjDecompressToYUVPlanes(handle, jpegData, jpegSize, planes, width, strides,
+                                               height, TJFLAG_FASTDCT))) {
             reportCorrupt("decode");
             return false;
         }
@@ -137,15 +137,15 @@ bool MjpegDecoder::decode(const Frame& jpeg, Frame& i420) {
 
         unsigned char* planes[3] = {planeY, scratchU, scratchV};
         int strides[3] = {width, sourceChromaWidth, sourceChromaWidth};
-        if (!decodedOk(tjDecompressToYUVPlanes(handle, jpegData, jpegSize, planes, width,
-                                               strides, height, TJFLAG_FASTDCT))) {
+        if (!decodedOk(tjDecompressToYUVPlanes(handle, jpegData, jpegSize, planes, width, strides,
+                                               height, TJFLAG_FASTDCT))) {
             reportCorrupt("decode");
             return false;
         }
-        resamplePlane(scratchU, sourceChromaWidth, sourceChromaHeight, planeU,
-                      layout.chromaWidth, layout.chromaHeight);
-        resamplePlane(scratchV, sourceChromaWidth, sourceChromaHeight, planeV,
-                      layout.chromaWidth, layout.chromaHeight);
+        resamplePlane(scratchU, sourceChromaWidth, sourceChromaHeight, planeU, layout.chromaWidth,
+                      layout.chromaHeight);
+        resamplePlane(scratchV, sourceChromaWidth, sourceChromaHeight, planeV, layout.chromaWidth,
+                      layout.chromaHeight);
     }
 
     i420.format = PixelFormat::I420;

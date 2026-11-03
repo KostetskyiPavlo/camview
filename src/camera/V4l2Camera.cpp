@@ -1,19 +1,20 @@
 #include "camera/V4l2Camera.hpp"
+
 #include "util/Log.hpp"
 
-#include <fcntl.h>
 #include <linux/videodev2.h>
-#include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <system_error>
 
 #include <algorithm>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
+#include <fcntl.h>
 #include <optional>
+#include <poll.h>
 #include <stdexcept>
-#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -44,24 +45,25 @@ std::string errnoText(int error) {
     return std::generic_category().message(error);
 }
 
-[[noreturn]] void throwErrno(const std::string& context, int error) {
-    throw CameraError(context + ": " + errnoText(error));
-}
-
-std::string openErrorHint(int error) {
+// Extra guidance for errors a user can fix; empty for everything else.
+std::string errorHint(int error) {
     switch (error) {
     case ENOENT:
         return " (no such device; list cameras with 'v4l2-ctl --list-devices')";
     case EACCES:
         return " (permission denied; add the user to the 'video' group)";
     case EBUSY:
-        return " (device is busy; another process is using the camera)";
+        return " (another process is using the camera)";
     case ENODEV:
     case ENXIO:
         return " (device is not present; was it unplugged?)";
     default:
         return "";
     }
+}
+
+[[noreturn]] void throwErrno(const std::string& context, int error) {
+    throw CameraError(context + ": " + errnoText(error) + errorHint(error));
 }
 
 // V4L2 fills fixed-size, NUL-terminated byte arrays for names.
@@ -87,8 +89,7 @@ UniqueFd openDevice(const std::string& path) {
     // with poll() and a timeout, so a dead camera can never hang the capture loop.
     UniqueFd fd(::open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC));
     if (!fd) {
-        const int error = errno;
-        throw CameraError("Cannot open " + path + ": " + errnoText(error) + openErrorHint(error));
+        throwErrno("Cannot open " + path, errno);
     }
     return fd;
 }
@@ -191,7 +192,8 @@ std::vector<CameraMode> enumerateModes(int fd, const CameraMode& requested) {
 V4l2Camera::V4l2Camera(std::string devicePath, CameraMode requested, ModePriority priority)
     : devicePath_(std::move(devicePath)), requested_(requested), priority_(priority) {
     if (requested_.format != PixelFormat::Yuyv && requested_.format != PixelFormat::Mjpeg) {
-        throw std::invalid_argument("V4l2Camera: only YUYV and MJPG can be requested from a camera");
+        throw std::invalid_argument(
+            "V4l2Camera: only YUYV and MJPG can be requested from a camera");
     }
     if (requested_.width <= 0 || requested_.height <= 0 || requested_.fps <= 0.0) {
         throw std::invalid_argument("V4l2Camera: width, height and fps must be positive");
@@ -325,8 +327,10 @@ CaptureStatus V4l2Camera::capture(Frame& frame, std::chrono::milliseconds timeou
         // Details of the first few bad frames are enough to see the pattern.
         if (errorFlagFrames_ + truncatedFrames_ <= 5) {
             log::warning("Skipping frame #", buffer.sequence, ": ",
-                         errorFlag ? "driver error flag" : "wrong size", ", ", bytesUsed,
-                         " of ", minimumBytes, " bytes");
+                         errorFlag ? "driver error flag" : "wrong size", ", ", bytesUsed, " bytes",
+                         mode_.format == PixelFormat::Yuyv
+                             ? " of " + std::to_string(minimumBytes) + " expected"
+                             : std::string());
         }
         return queueBuffer(buffer.index) ? CaptureStatus::Timeout : CaptureStatus::Disconnected;
     }
@@ -338,8 +342,8 @@ CaptureStatus V4l2Camera::capture(Frame& frame, std::chrono::milliseconds timeou
     frame.sequence = buffer.sequence;
     frame.dequeueTime = dequeueTime;
 
-    const bool monotonic = (buffer.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK) ==
-                           V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+    const bool monotonic =
+        (buffer.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK) == V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
     if (monotonic) {
         frame.captureTime = toTimePoint(buffer.timestamp);
     } else {
@@ -400,7 +404,7 @@ void V4l2Camera::negotiateFormat() {
     // supports and writes back what it actually set.
     if (xioctl(fd_.get(), VIDIOC_S_FMT, &format) == -1) {
         const int error = errno;
-        throwErrno("VIDIOC_S_FMT on " + devicePath_ + openErrorHint(error), error);
+        throwErrno("VIDIOC_S_FMT on " + devicePath_, error);
     }
 
     const auto pixelFormat = pixelFormatFromFourcc(format.fmt.pix.pixelformat);
@@ -462,7 +466,7 @@ void V4l2Camera::startStreaming() {
     request.memory = V4L2_MEMORY_MMAP;
     if (xioctl(fd_.get(), VIDIOC_REQBUFS, &request) == -1) {
         const int error = errno;
-        throwErrno("VIDIOC_REQBUFS on " + devicePath_ + openErrorHint(error), error);
+        throwErrno("VIDIOC_REQBUFS on " + devicePath_, error);
     }
     if (request.count < kMinBufferCount) {
         throw CameraError("The driver allocated only " + std::to_string(request.count) +
@@ -478,8 +482,8 @@ void V4l2Camera::startStreaming() {
             throwErrno("VIDIOC_QUERYBUF on " + devicePath_, error);
         }
 
-        void* start = ::mmap(nullptr, buffer.length, PROT_READ | PROT_WRITE, MAP_SHARED,
-                             fd_.get(), static_cast<off_t>(buffer.m.offset));
+        void* start = ::mmap(nullptr, buffer.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd_.get(),
+                             static_cast<off_t>(buffer.m.offset));
         if (start == MAP_FAILED) {
             const int error = errno;
             throwErrno("mmap of buffer " + std::to_string(index), error);
@@ -494,7 +498,7 @@ void V4l2Camera::startStreaming() {
     v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     if (xioctl(fd_.get(), VIDIOC_STREAMON, &type) == -1) {
         const int error = errno;
-        throwErrno("VIDIOC_STREAMON on " + devicePath_ + openErrorHint(error), error);
+        throwErrno("VIDIOC_STREAMON on " + devicePath_, error);
     }
     streaming_ = true;
     staleFramesSkipped_ = 0;

@@ -1,7 +1,6 @@
 #include "app/CliParser.hpp"
 
 #include <gtest/gtest.h>
-
 #include <string>
 #include <vector>
 
@@ -21,7 +20,8 @@ CliResult parse(std::vector<std::string> args) {
 
 void expectError(const std::vector<std::string>& args, const std::string& fragment) {
     const CliResult result = parse(args);
-    EXPECT_EQ(result.action, CliResult::Action::Error) << "args: " << ::testing::PrintToString(args);
+    EXPECT_EQ(result.action, CliResult::Action::Error)
+        << "args: " << ::testing::PrintToString(args);
     EXPECT_NE(result.error.find(fragment), std::string::npos) << "error: " << result.error;
 }
 

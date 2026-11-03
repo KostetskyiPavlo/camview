@@ -1,12 +1,12 @@
 #include "app/CliParser.hpp"
 
-#include <getopt.h>
+#include <system_error>
 
 #include <charconv>
 #include <cmath>
+#include <getopt.h>
 #include <optional>
 #include <sstream>
-#include <system_error>
 #include <utility>
 
 namespace camview {
@@ -263,10 +263,8 @@ std::string usageText(std::string_view programName) {
         << "  -d, --device PATH|N  camera device or index (default " << defaults.device
         << "; 2 means /dev/video2)\n"
         << "      --width N        requested width, 16..7680 (default " << defaults.width << ")\n"
-        << "      --height N       requested height, 16..4320 (default " << defaults.height
-        << ")\n"
-        << "      --fps N          requested frame rate, 1..240 (default " << defaults.fps
-        << ")\n"
+        << "      --height N       requested height, 16..4320 (default " << defaults.height << ")\n"
+        << "      --fps N          requested frame rate, 1..240 (default " << defaults.fps << ")\n"
         << "      --format F       mjpg or yuyv (default " << toLower(toString(defaults.format))
         << ")\n"
         << "      --test-pattern   synthetic source instead of a camera\n"

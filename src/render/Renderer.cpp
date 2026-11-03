@@ -1,11 +1,12 @@
 #include "render/Renderer.hpp"
+
 #include "render/Overlay.hpp"
 #include "util/Log.hpp"
 
 #include <SDL2/SDL.h>
 
-#include <string>
 #include <algorithm>
+#include <string>
 
 namespace camview {
 

@@ -1,8 +1,7 @@
 #include "camera/ModeSelector.hpp"
 
-#include <gtest/gtest.h>
-
 #include <algorithm>
+#include <gtest/gtest.h>
 #include <ostream>
 #include <vector>
 
@@ -26,7 +25,7 @@ CameraMode yuyv(int width, int height, double fps) {
 // Exactly what the development camera (USB 32e6:9221) reports, in the driver's order.
 // 1920x1080 comes last, so nothing may rely on the list being sorted.
 std::vector<CameraMode> developmentCamera() {
-    return {mjpg(1280, 720, 30), mjpg(960, 720, 30), mjpg(800, 600, 30),  mjpg(640, 480, 30),
+    return {mjpg(1280, 720, 30), mjpg(960, 720, 30), mjpg(800, 600, 30),   mjpg(640, 480, 30),
             mjpg(640, 360, 30),  mjpg(320, 240, 30), mjpg(1920, 1080, 30), yuyv(640, 480, 30)};
 }
 
@@ -69,14 +68,12 @@ TEST(ModeSelector, PrefersMjpegWhenTheRequestedFormatIsNotOffered) {
 }
 
 TEST(ModeSelector, PicksTheSlowestRateThatMeetsTheRequest) {
-    const std::vector<CameraMode> modes{mjpg(640, 480, 15), mjpg(640, 480, 30),
-                                        mjpg(640, 480, 60)};
+    const std::vector<CameraMode> modes{mjpg(640, 480, 15), mjpg(640, 480, 30), mjpg(640, 480, 60)};
     EXPECT_EQ(selectMode(modes, mjpg(640, 480, 25)), mjpg(640, 480, 30));
 }
 
 TEST(ModeSelector, PicksTheFastestRateWhenNoneMeetsTheRequest) {
-    const std::vector<CameraMode> modes{mjpg(640, 480, 15), mjpg(640, 480, 30),
-                                        mjpg(640, 480, 60)};
+    const std::vector<CameraMode> modes{mjpg(640, 480, 15), mjpg(640, 480, 30), mjpg(640, 480, 60)};
     EXPECT_EQ(selectMode(modes, mjpg(640, 480, 90)), mjpg(640, 480, 60));
 }
 

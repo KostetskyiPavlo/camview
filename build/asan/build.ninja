@@ -51,91 +51,98 @@ build cmake_object_order_depends_target_camview_core: phony || CMakeFiles/camvie
 
 build CMakeFiles/camview_core.dir/src/app/App.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/app/App.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/app/App.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/app
 
 build CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/app/CliParser.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/app
 
 build CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/CameraMode.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/camera
 
 build CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/ModeSelector.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/camera
 
 build CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/TestPatternSource.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/camera
 
 build CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/camera/V4l2Camera.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/camera
 
 build CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/decode/MjpegDecoder.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/decode
 
 build CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/frame/PixelFormat.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/frame
 
 build CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/render/Overlay.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/render
 
 build CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/render/Renderer.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/render
 
 build CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/stats/CsvLogger.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/stats
 
 build CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/stats/PipelineStats.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/stats
 
+build CMakeFiles/camview_core.dir/src/util/SystemInfo.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/util/SystemInfo.cpp || cmake_object_order_depends_target_camview_core
+  DEP_FILE = CMakeFiles/camview_core.dir/src/util/SystemInfo.cpp.o.d
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/camview_core.dir
+  OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/util
+
 build CMakeFiles/camview_core.dir/src/util/Log.cpp.o: CXX_COMPILER__camview_core_unscanned_Debug /home/pav/projects/camview/src/util/Log.cpp || cmake_object_order_depends_target_camview_core
   DEP_FILE = CMakeFiles/camview_core.dir/src/util/Log.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -D_REENTRANT
   INCLUDES = -I/home/pav/projects/camview/src -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/camview_core.dir
   OBJECT_FILE_DIR = CMakeFiles/camview_core.dir/src/util
@@ -148,7 +155,7 @@ build CMakeFiles/camview_core.dir/src/util/Log.cpp.o: CXX_COMPILER__camview_core
 #############################################
 # Link the static library libcamview_core.a
 
-build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/app/App.cpp.o CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
+build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFiles/camview_core.dir/src/app/App.cpp.o CMakeFiles/camview_core.dir/src/app/CliParser.cpp.o CMakeFiles/camview_core.dir/src/camera/CameraMode.cpp.o CMakeFiles/camview_core.dir/src/camera/ModeSelector.cpp.o CMakeFiles/camview_core.dir/src/camera/TestPatternSource.cpp.o CMakeFiles/camview_core.dir/src/camera/V4l2Camera.cpp.o CMakeFiles/camview_core.dir/src/decode/MjpegDecoder.cpp.o CMakeFiles/camview_core.dir/src/frame/PixelFormat.cpp.o CMakeFiles/camview_core.dir/src/render/Overlay.cpp.o CMakeFiles/camview_core.dir/src/render/Renderer.cpp.o CMakeFiles/camview_core.dir/src/stats/CsvLogger.cpp.o CMakeFiles/camview_core.dir/src/stats/PipelineStats.cpp.o CMakeFiles/camview_core.dir/src/util/SystemInfo.cpp.o CMakeFiles/camview_core.dir/src/util/Log.cpp.o
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = CMakeFiles/camview_core.dir
   POST_BUILD = :
@@ -166,9 +173,9 @@ build libcamview_core.a: CXX_STATIC_LIBRARY_LINKER__camview_core_Debug CMakeFile
 build cmake_object_order_depends_target_camview: phony || cmake_object_order_depends_target_camview_core
 
 build CMakeFiles/camview.dir/src/main.cpp.o: CXX_COMPILER__camview_unscanned_Debug /home/pav/projects/camview/src/main.cpp || cmake_object_order_depends_target_camview
-  DEFINES = -DCAMVIEW_VERSION=\"0.1.0\"
+  DEFINES = -DCAMVIEW_VERSION=\"1.0.0\"
   DEP_FILE = CMakeFiles/camview.dir/src/main.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer
   INCLUDES = -I/home/pav/projects/camview/src
   OBJECT_DIR = CMakeFiles/camview.dir
   OBJECT_FILE_DIR = CMakeFiles/camview.dir/src
@@ -242,35 +249,35 @@ build cmake_object_order_depends_target_camview_tests: phony || cmake_object_ord
 
 build tests/CMakeFiles/camview_tests.dir/AdaptationPolicyTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/AdaptationPolicyTest.cpp || cmake_object_order_depends_target_camview_tests
   DEP_FILE = tests/CMakeFiles/camview_tests.dir/AdaptationPolicyTest.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
   INCLUDES = -I/home/pav/projects/camview/src
   OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
 
 build tests/CMakeFiles/camview_tests.dir/CliParserTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/CliParserTest.cpp || cmake_object_order_depends_target_camview_tests
   DEP_FILE = tests/CMakeFiles/camview_tests.dir/CliParserTest.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
   INCLUDES = -I/home/pav/projects/camview/src
   OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
 
 build tests/CMakeFiles/camview_tests.dir/LatestFrameSlotTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/LatestFrameSlotTest.cpp || cmake_object_order_depends_target_camview_tests
   DEP_FILE = tests/CMakeFiles/camview_tests.dir/LatestFrameSlotTest.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
   INCLUDES = -I/home/pav/projects/camview/src
   OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
 
 build tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/ModeSelectorTest.cpp || cmake_object_order_depends_target_camview_tests
   DEP_FILE = tests/CMakeFiles/camview_tests.dir/ModeSelectorTest.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
   INCLUDES = -I/home/pav/projects/camview/src
   OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir
 
 build tests/CMakeFiles/camview_tests.dir/OverlayTest.cpp.o: CXX_COMPILER__camview_tests_unscanned_Debug /home/pav/projects/camview/tests/OverlayTest.cpp || cmake_object_order_depends_target_camview_tests
   DEP_FILE = tests/CMakeFiles/camview_tests.dir/OverlayTest.cpp.o.d
-  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
+  FLAGS = -g -std=c++20 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -DGTEST_HAS_PTHREAD=1
   INCLUDES = -I/home/pav/projects/camview/src
   OBJECT_DIR = tests/CMakeFiles/camview_tests.dir
   OBJECT_FILE_DIR = tests/CMakeFiles/camview_tests.dir

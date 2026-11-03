@@ -1,6 +1,6 @@
 #include "app/App.hpp"
-#include "app/AdaptationPolicy.hpp"
 
+#include "app/AdaptationPolicy.hpp"
 #include "camera/TestPatternSource.hpp"
 #include "camera/V4l2Camera.hpp"
 #include "decode/MjpegDecoder.hpp"
@@ -106,7 +106,6 @@ int App::run() {
     source_ = makeSource(config_);
     source_->open();
     cameraConnected_.store(true);
-    log::info("Source: ", source_->description(), ", mode ", toString(source_->mode()));
 
     // From here on only the capture thread touches source_, until it is joined below.
     captureThread_ = std::jthread([this](std::stop_token token) { captureLoop(token); });
@@ -204,18 +203,17 @@ int App::run() {
 
             log::info("Capture ", captureFps, " fps, display ", summary->displayFps,
                       " fps | age avg ", summary->avgTotalMs, " max ", summary->maxTotalMs,
-                      " ms = transfer ", summary->avgTransferMs, " + queue ",
-                      summary->avgQueueMs, " + decode ", summary->avgDecodeMs, " + render ",
-                      summary->avgRenderMs, " | dropped ", dropped);
+                      " ms = transfer ", summary->avgTransferMs, " + queue ", summary->avgQueueMs,
+                      " + decode ", summary->avgDecodeMs, " + render ", summary->avgRenderMs,
+                      " | dropped ", dropped);
             overlayLines = makeOverlayLines(captureFps, *summary, dropped);
 
             const double processingMs = summary->avgDecodeMs + summary->avgRenderMs;
             if (config_.adapt && canAdapt_.load() &&
                 adaptation.update(captureFps, summary->displayFps, processingMs)) {
                 log::warning("Showing ", summary->displayFps, " of ", captureFps,
-                             " fps: decode + render take ", processingMs,
-                             " ms of the camera's ", 1000.0 / captureFps,
-                             " ms frame interval; requesting a smaller mode");
+                             " fps: decode + render take ", processingMs, " ms of the camera's ",
+                             1000.0 / captureFps, " ms frame interval; requesting a smaller mode");
                 downgradeRequested_.store(true);
             }
         }
@@ -245,8 +243,8 @@ void App::captureLoop(const std::stop_token& stopToken) {
                 try {
                     source_->open();
                     cameraConnected_.store(true);
-                    log::info("Camera reconnected after ", toSeconds(Clock::now() - lostAt),
-                              " s (", failedAttempts + 1, " attempts)");
+                    log::info("Camera reconnected after ", toSeconds(Clock::now() - lostAt), " s (",
+                              failedAttempts + 1, " attempts)");
                     failedAttempts = 0;
                     lastError.clear();
                 } catch (const CameraError& e) {
@@ -275,8 +273,7 @@ void App::captureLoop(const std::stop_token& stopToken) {
                     try {
                         source_->close();
                         source_->open();
-                        log::info("Adapted: ", toString(before), " -> ",
-                                  toString(source_->mode()));
+                        log::info("Adapted: ", toString(before), " -> ", toString(source_->mode()));
                     } catch (const CameraError& e) {
                         // Hand over to the reconnect logic above.
                         log::warning("Reopening in a smaller mode failed: ", e.what());
