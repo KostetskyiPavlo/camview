@@ -48,6 +48,8 @@ private:
     std::atomic<std::uint32_t> capturedFrames_{0};
     std::atomic<bool> cameraConnected_{false}; // false while the capture thread reconnects.
     std::atomic<bool> captureFailed_{false};   // Unexpected error: the capture thread gave up.
+    std::atomic<bool> downgradeRequested_{false}; // Main thread asks for a smaller mode.
+    std::atomic<bool> canAdapt_{true};            // false once the smallest mode is reached.
 
     // Last member on purpose: destroyed first, so the thread is stopped and joined before the
     // camera and the slot it uses go away, even when run() exits with an exception.

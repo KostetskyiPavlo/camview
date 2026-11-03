@@ -111,6 +111,30 @@ TEST(ModeSelector, ResultDoesNotDependOnListOrder) {
     }
 }
 
+TEST(ModeSelectorLower, StepsDownTheResolutionLadder) {
+    const std::vector<CameraMode> modes = developmentCamera();
+    EXPECT_EQ(selectLowerMode(modes, mjpg(1280, 720, 30)), mjpg(960, 720, 30));
+    EXPECT_EQ(selectLowerMode(modes, mjpg(960, 720, 30)), mjpg(800, 600, 30));
+    EXPECT_EQ(selectLowerMode(modes, mjpg(800, 600, 30)), mjpg(640, 480, 30));
+    EXPECT_EQ(selectLowerMode(modes, mjpg(640, 480, 30)), mjpg(640, 360, 30));
+    EXPECT_EQ(selectLowerMode(modes, mjpg(640, 360, 30)), mjpg(320, 240, 30));
+}
+
+TEST(ModeSelectorLower, ReturnsNothingAtTheSmallestMode) {
+    EXPECT_FALSE(selectLowerMode(developmentCamera(), mjpg(320, 240, 30)).has_value());
+}
+
+TEST(ModeSelectorLower, KeepsThePixelFormat) {
+    // The only YUYV mode is 640x480, so there is nowhere to go without switching formats.
+    EXPECT_FALSE(selectLowerMode(developmentCamera(), yuyv(640, 480, 30)).has_value());
+}
+
+TEST(ModeSelectorLower, DoesNotTradeFrameRateForResolution) {
+    const std::vector<CameraMode> modes{mjpg(1280, 720, 60), mjpg(640, 480, 30),
+                                        mjpg(320, 240, 60)};
+    EXPECT_EQ(selectLowerMode(modes, mjpg(1280, 720, 60)), mjpg(320, 240, 60));
+}
+
 } // namespace
 
 } // namespace camview

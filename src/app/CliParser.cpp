@@ -31,6 +31,7 @@ constexpr int kOptionExtraRenderDelay = 1007;
 constexpr int kOptionStatsCsv = 1008;
 constexpr int kOptionPrefer = 1009;
 constexpr int kOptionListModes = 1010;
+constexpr int kOptionNoAdapt = 1011;
 constexpr int kMaxExtraRenderDelayMs = 1000;
 
 const option kLongOptions[] = {
@@ -45,6 +46,7 @@ const option kLongOptions[] = {
     {"stats-csv", required_argument, nullptr, kOptionStatsCsv},
     {"prefer", required_argument, nullptr, kOptionPrefer},
     {"list-modes", no_argument, nullptr, kOptionListModes},
+    {"no-adapt", no_argument, nullptr, kOptionNoAdapt},
     {"help", no_argument, nullptr, 'h'},
     {"version", no_argument, nullptr, kOptionVersion},
     {nullptr, 0, nullptr, 0},
@@ -221,6 +223,9 @@ CliResult parseCommandLine(int argc, char* argv[]) {
         case kOptionListModes:
             config.listModes = true;
             break;
+        case kOptionNoAdapt:
+            config.adapt = false;
+            break;
         case 'h':
             result.action = CliResult::Action::Help;
             return result;
@@ -272,6 +277,7 @@ std::string usageText(std::string_view programName) {
         << "      --prefer P       what to keep when the exact mode is unavailable:\n"
         << "                       fps (default) or resolution\n"
         << "      --list-modes     print the modes the camera offers and exit\n"
+        << "      --no-adapt       keep the selected mode even if the hardware cannot keep up\n"
         << "  -h, --help           show this help and exit\n"
         << "      --version        show the version and exit\n"
         << "\n"

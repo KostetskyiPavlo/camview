@@ -547,15 +547,25 @@ bool V4l2Camera::queueBuffer(std::uint32_t index) {
 }
 
 void V4l2Camera::selectTargetMode() {
-    const std::vector<CameraMode> modes = enumerateModes(fd_.get(), requested_);
-    if (const auto best = selectMode(modes, requested_, priority_)) {
+    modes_ = enumerateModes(fd_.get(), requested_);
+    if (const auto best = selectMode(modes_, requested_, priority_)) {
         target_ = *best;
-        log::info("Camera offers ", modes.size(), " modes in supported formats");
+        log::info("Camera offers ", modes_.size(), " modes in supported formats");
     } else {
         target_ = requested_;
         log::warning("The camera lists no modes in supported formats; "
                      "asking the driver for the requested one");
     }
+}
+
+bool V4l2Camera::stepDown() {
+    const auto lower = selectLowerMode(modes_, mode_);
+    if (!lower) {
+        return false;
+    }
+    // From now on this is what we ask for, including after a reconnect.
+    requested_ = *lower;
+    return true;
 }
 
 std::vector<CameraMode> V4l2Camera::listModes(const std::string& devicePath) {

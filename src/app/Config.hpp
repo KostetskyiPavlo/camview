@@ -17,6 +17,7 @@ struct Config {
     int height{720};
     double fps{60.0};
     bool preferResolution{false}; // Keep resolution rather than frame rate when choosing a mode.
+    bool adapt{true};             // Step down to smaller modes when decode + render cannot keep up.
     bool testPattern{false};      // Synthetic source instead of a camera.
     bool display{true};           // false: capture and decode without a window (benchmarking).
     bool listModes{false};        // Print the camera's modes and exit.

@@ -25,4 +25,10 @@ enum class ModePriority {
                                                    const CameraMode& requested,
                                                    ModePriority priority = ModePriority::FrameRate);
 
+// The next smaller mode after `current`: same pixel format, a frame rate not below current's,
+// and the largest resolution that is still smaller than current's. Used to adapt to hardware
+// that cannot keep up. Returns nothing when `current` is already the smallest such mode.
+[[nodiscard]] std::optional<CameraMode> selectLowerMode(std::span<const CameraMode> available,
+                                                        const CameraMode& current);
+
 } // namespace camview
